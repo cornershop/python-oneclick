@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import lxml.objectify
+import xml.etree.ElementTree as ET
 
 RESPONSE_CODE = {
     'authorize': {
@@ -30,7 +30,7 @@ VALID_RESPONSE_PARAMS = {
     'finishInscription': ['authCode', 'creditCardType', 'last4CardDigits',
                           'responseCode', 'tbkUser'],
     'codeReverseOneClick': ['reverseCode', 'reversed'],
-    'removeUser': []  # TODO: fix here
+    'removeUser': ['removed']  # TODO: fix here
 }
 
 
@@ -50,28 +50,28 @@ class Validator(object):
         self.validate()
 
     def build_xml_response(self, xml_string):
-        return lxml.objectify.fromstring(xml_string)
+        return ET.fromstring(xml_string)
 
     @property
     def xml_result(self):
         if not self._xml_result:
-            result = None
-            # search node
-            for e in self.xml_response.iter():
-                if type(e) in [lxml.objectify.ObjectifiedElement, lxml.objectify.BoolElement] and e.tag == 'return':
-                    result = e
+            result = {}
+            
+            for e in self.xml_response.findall('.//return'):
+                for children in e.getchildren():
+                    result[children.tag] = children.text
+                else:
+                    result['removed'] = bool(e.text)
 
-            """
-            DISCLAIMER:
-            this conditional statement is again PEP8 by lxml FutureWarning (validator.py:66)
             """
             if type(result) == lxml.objectify.BoolElement:
                 self._xml_result = {'removed': result}
-            elif result is not None:
+            """
+            if result:
                 params = VALID_RESPONSE_PARAMS[self.action]
                 obj = {}
                 for p in params:
-                    if hasattr(result, p):
+                    if p in result:
                         obj[p] = result[p]
                     else:
                         obj[p] = None
@@ -80,12 +80,12 @@ class Validator(object):
 
     @property
     def xml_error(self):
+        self._xml_error = None
         if not self._xml_error:
-            result = {}
-            for e in self.xml_response.iter():
-                if type(e) == lxml.objectify.StringElement and e.tag in ['faultcode', 'faultstring']:
-                    result[e.tag] = e
-            self._xml_error = result
+            faultcode = self.xml_response.findall('.//faultcode')
+            faultstring = self.xml_response.findall('.//faultstring')
+            if faultcode and faultstring:
+                self._xml_error = {'faultcode': faultcode[0].text, 'faultstring': faultstring[0].text}
         return self._xml_error
 
     def is_valid(self):
@@ -103,7 +103,7 @@ class Validator(object):
         if self.action in RESPONSE_CODE and self.response_code in RESPONSE_CODE[self.action]:
             return RESPONSE_CODE[self.action][self.response_code]
         elif self.response_code in RESPONSE_CODE['default']:
-            self.RESPONSE_CODE['default'][self.response_code]
+            RESPONSE_CODE['default'][self.response_code]
         else:
             return self.response_code
 
@@ -111,11 +111,11 @@ class Validator(object):
         if self.xml_error:
             self.errors.append('error')
         else:
-            if self.action in ['finishInscription', 'Authorize'] and self.response_code:
+            if self.action in ['finishInscription', 'Authorize'] and int(self.response_code) != 0:
                 self.errors.append(self.response_code_display())
 
             elif self.action == 'removeUser' and not self.xml_result['removed']:  # TODO
                 self.errors.append('imposible eliminar la inscripción')
 
-            elif self.action == 'codeReverseOneClick' and not self.xml_result['reversed']:
+            elif self.action == 'codeReverseOneClick' and self.xml_result['reversed'] != 'true':
                 self.errors.append('imposible revertir la compra')

@@ -60,7 +60,6 @@ setup(
         'hashlib==20081119',
         'idna==2.0',
         'ipaddress==1.0.14',
-        'lxml==3.4.4',
         'osa==0.1.6.6',
         'pyOpenSSL==0.15.1',
         'pyasn1==0.1.8',
@@ -81,6 +80,3 @@ setup(
     zip_safe=True,
     license='GPLv3'
 )
-
-
-
