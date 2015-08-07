@@ -19,7 +19,6 @@ os.environ['TBK_COMMERCE_KEY'] = "KEY"
 os.environ['TBK_COMMERCE_CRT'] = "CERTIFICATE"
 ```
 
-
 ## Tests
 
   ```
