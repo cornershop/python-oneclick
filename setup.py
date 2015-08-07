@@ -62,7 +62,6 @@ setup(
         'ipaddress==1.0.14',
         'lxml==3.4.4',
         'osa==0.1.6.6',
-        'py-dom-xpath==0.1',
         'pyOpenSSL==0.15.1',
         'pyasn1==0.1.8',
         'pycparser==2.14',
