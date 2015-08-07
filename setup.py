@@ -46,7 +46,6 @@ setup(
         'six>=1.7.3',
         'PyCrypto>=2.6.1',
         'pytz',
-        'git+git://github.com/pysimplesoap/pysimplesoap.git#egg=pysimplesoap',
         'M2Crypto==0.22.3',
         'PySimpleSOAP==1.16',
         'PyXML==0.8.4',
