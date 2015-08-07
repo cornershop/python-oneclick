@@ -52,7 +52,7 @@ setup(
         'arrow==0.6.0',
         'certifi==2015.04.28',
         'cffi==1.1.2',
-        'cryptography==0.9.3',
+        #'cryptography==0.9.3',
         'defusedxml==0.4.1',
         'eight==0.3.2',
         'enum34==1.0.4',
