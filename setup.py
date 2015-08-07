@@ -68,7 +68,7 @@ setup(
         'pycrypto==2.6.1',
         'python-dateutil==2.4.2',
         'requests==2.7.0',
-        'signxml==0.4.3',
+        #'signxml==0.4.3',
         #'soap2py==1.16',
         'wsgiref==0.1.2',
     ],
