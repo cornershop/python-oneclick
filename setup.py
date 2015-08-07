@@ -48,7 +48,6 @@ setup(
         'pytz',
         'M2Crypto==0.22.3',
         'PySimpleSOAP==1.16',
-        'PyXML==0.8.4',
         'argparse==1.2.1',
         'arrow==0.6.0',
         'certifi==2015.04.28',
