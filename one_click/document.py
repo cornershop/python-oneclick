@@ -20,21 +20,19 @@ class Document(object):
     _params = None
     doc = None
 
-    def __init__(self, action, params):
+    def __init__(self, key, cert, action, params):
         self._action = action
         self._params = params
         self.doc = self.build_doc()
+        self._key = key
+        self._cert = cert
 
     @property
     def key(self):
-        if not self._key:
-            self._key = os.getenv('TBK_COMMERCE_KEY')
         return self._key
 
     @property
     def cert(self):
-        if not self._cert:
-            self._cert = os.getenv('TBK_COMMERCE_CRT')
         return self._cert
 
     @property

@@ -62,11 +62,6 @@ class Validator(object):
                     result[children.tag] = children.text
                 else:
                     result['removed'] = bool(e.text)
-
-            """
-            if type(result) == lxml.objectify.BoolElement:
-                self._xml_result = {'removed': result}
-            """
             if result:
                 params = VALID_RESPONSE_PARAMS[self.action]
                 obj = {}
