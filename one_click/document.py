@@ -20,19 +20,21 @@ class Document(object):
     _params = None
     doc = None
 
-    def __init__(self, key, cert, action, params):
+    def __init__(self, action, params):
         self._action = action
         self._params = params
         self.doc = self.build_doc()
-        self._key = key.encode('ascii')
-        self._cert = cert.encode('ascii')
 
     @property
     def key(self):
+        if not self._key:
+            self._key = os.getenv('TBK_COMMERCE_KEY')
         return self._key
 
     @property
     def cert(self):
+        if not self._cert:
+            self._cert = os.getenv('TBK_COMMERCE_CRT')
         return self._cert
 
     @property
@@ -58,7 +60,7 @@ class Document(object):
     def rsa_sign(self, xml):
         "Sign an XML document using RSA"
         # Sign the SHA1 digest of the signed xml using RSA cipher
-        pkey = RSA.load_key_string(self.key)
+        pkey = RSA.load_key(self.key)
         signature = pkey.sign(hashlib.sha1(xml).digest())
         # build the mapping (placeholders) to create the final xml signed message
         return base64.b64encode(signature)
