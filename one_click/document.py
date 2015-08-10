@@ -24,8 +24,8 @@ class Document(object):
         self._action = action
         self._params = params
         self.doc = self.build_doc()
-        self._key = key
-        self._cert = cert
+        self._key = key.encode('ascii')
+        self._cert = cert.encode('ascii')
 
     @property
     def key(self):
