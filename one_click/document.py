@@ -54,7 +54,8 @@ class Document(object):
 
     def get_body_id(self):
         m = hashlib.md5()
-        m.update("{}{}{}".format(self._action, self._params, arrow.now().format('YYYY-MM-DD HH:mm:ss ZZ')))
+        m.update("{}{}{}".format(self._action, self._params,
+                 arrow.now().format('YYYY-MM-DD HH:mm:ss ZZ')))
         return m.hexdigest()
 
     def rsa_sign(self, xml):

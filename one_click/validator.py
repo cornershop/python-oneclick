@@ -3,7 +3,7 @@
 import xml.etree.ElementTree as ET
 
 RESPONSE_CODE = {
-    'authorize': {
+    'Authorize': {
         '0': 'aprobado',
         '-1': 'rechazo',
         '-2': 'rechazo',
@@ -30,7 +30,7 @@ VALID_RESPONSE_PARAMS = {
     'finishInscription': ['authCode', 'creditCardType', 'last4CardDigits',
                           'responseCode', 'tbkUser'],
     'codeReverseOneClick': ['reverseCode', 'reversed'],
-    'removeUser': ['removed']  # TODO: fix here
+    'removeUser': ['removed']
 }
 
 
@@ -38,12 +38,15 @@ class Validator(object):
     action = None
     content = None
     xml_response = None
-    errors = None
+    error = None
+    error_msg = ''
+    user_error_msg = ''
+    extra = {}
     _xml_result = None
     _xml_error = None
 
     def __init__(self, content, action):
-        self.errors = []
+        self.error = None
         self.content = content
         self.action = action
         self.xml_response = self.build_xml_response(content)
@@ -56,7 +59,7 @@ class Validator(object):
     def xml_result(self):
         if not self._xml_result:
             result = {}
-            
+
             for e in self.xml_response.findall('.//return'):
                 for children in e.getchildren():
                     result[children.tag] = children.text
@@ -80,37 +83,50 @@ class Validator(object):
             faultcode = self.xml_response.findall('.//faultcode')
             faultstring = self.xml_response.findall('.//faultstring')
             if faultcode and faultstring:
-                self._xml_error = {'faultcode': faultcode[0].text, 'faultstring': faultstring[0].text}
+                self._xml_error = {'faultcode': faultcode[0].text,
+                                   'faultstring': faultstring[0].text}
         return self._xml_error
 
-    def is_valid(self):
-        if self.errors:
+    def is_valid(self):  # True or False if any errors occurred (exceptions included)
+        if self.error:
             return False
         return True
 
     @property
     def response_code(self):
         if self.xml_result and 'responseCode' in self.xml_result:
-            return self.xml_result['responseCode']
+            return str(self.xml_result['responseCode'])
         return None
 
     def response_code_display(self):
         if self.action in RESPONSE_CODE and self.response_code in RESPONSE_CODE[self.action]:
             return RESPONSE_CODE[self.action][self.response_code]
         elif self.response_code in RESPONSE_CODE['default']:
-            RESPONSE_CODE['default'][self.response_code]
+            return RESPONSE_CODE['default'][self.response_code]
         else:
             return self.response_code
 
     def validate(self):
         if self.xml_error:
-            self.errors.append('error')
+            self.error = 'SoapServerError'
+            self.error_msg = self.xml_error['faultstring']
+            self.user_error_msg = ''
+            self.extra = self.xml_error
         else:
             if self.action in ['finishInscription', 'Authorize'] and int(self.response_code) != 0:
-                self.errors.append(self.response_code_display())
+                self.error = '{}Error'.format(self.action)
+                self.error_msg = self.response_code_display()
+                self.user_error_msg = self.error_msg
+                self.extra = {'response_code': self.response_code}
 
-            elif self.action == 'removeUser' and not self.xml_result['removed']:  # TODO
-                self.errors.append('imposible eliminar la inscripción')
+            elif self.action == 'removeUser' and not self.xml_result['removed']:
+                self.error = 'removeUserError'
+                self.error_msg = 'imposible eliminar la inscripción'
+                self.user_error_msg = self.error_msg
+                self.extra = {'removed': False}
 
             elif self.action == 'codeReverseOneClick' and self.xml_result['reversed'] != 'true':
-                self.errors.append('imposible revertir la compra')
+                self.error = 'codeReverseOneClickError'
+                self.error_msg = 'imposible revertir la compra'
+                self.user_error_msg = self.error_msg
+                self.extra = {'reversed': False}
