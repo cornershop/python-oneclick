@@ -34,7 +34,7 @@ VALID_RESPONSE_PARAMS = {
 }
 
 
-class Validator(object):
+class Response(object):
     action = None
     content = None
     xml_response = None

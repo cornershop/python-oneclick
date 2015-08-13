@@ -1,5 +1,5 @@
 from pysimplesoap.client import SoapClient
-from validator import Validator
+from response import Response
 
 
 class Client(object):
@@ -14,5 +14,5 @@ class Client(object):
 
     def request(self, action, xml, headerss):
         response_content = self.client.send('initInscription', xml)
-        v = Validator(response_content, action)
-        return v
+        response = Response(response_content, action)
+        return response
