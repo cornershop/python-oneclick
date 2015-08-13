@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from unittest import TestCase
 
-from one_click.validator import Validator
+from oneclick.validator import Validator
 
 
 class ValidatorInitInscriptionTest(TestCase):

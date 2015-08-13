@@ -17,16 +17,16 @@ long_description = read_file('README.rst').strip().split('split here', 1)[0]
 #version = __import__('one_click').__version__
 
 setup(
-    name='one_click',
+    name='oneclick',
     #version=version,
     #version='0.0.1',
-    #description=__import__('one_click').__doc__.strip(),
+    #description=__import__('oneclick').__doc__.strip(),
     long_description=long_description,
     author='Ignacio Hermosilla',
     author_email='hermosillavenegas@gmail.com',
     maintainer='Ignacio  Hermosilla',
     maintainer_email='hermosillavenegas@gmail.com',
-    url='http://github.com/ignaciohermosilla/one_click',
+    #url='http://github.com/ignaciohermosilla/one_click',
     #download_url='http://github.com/ignaciohermosilla/one_click/archive/{version}.zip'.format(version=version),
     classifiers=[
         'Development Status :: 4 - Beta',
@@ -40,7 +40,7 @@ setup(
         'Environment :: Web Environment',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
     ],
-    keywords=['one_click', 'transbank', 'webpay', 'chile', 'payments'],
+    keywords=['oneclick', 'one_click', 'transbank', 'webpay', 'chile', 'payments'],
     install_requires=[
         'requests>=2.3.0',
         'six>=1.7.3',
