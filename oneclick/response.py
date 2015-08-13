@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
-
 import xml.etree.ElementTree as ET
+from pysimplesoap import xmlsec
+from M2Crypto import RSA, EVP
+import base64
+import os
 
 RESPONSE_CODE = {
     'Authorize': {
@@ -44,9 +47,12 @@ class Response(object):
     extra = {}
     _xml_result = None
     _xml_error = None
+    _tbk_key = None
+    _testing = None
 
-    def __init__(self, content, action):
+    def __init__(self, content, action, testing=False):
         self.error = None
+        self._testing = testing
         self.content = content
         self.action = action
         self.xml_response = self.build_xml_response(content)
@@ -54,6 +60,54 @@ class Response(object):
 
     def build_xml_response(self, xml_string):
         return ET.fromstring(xml_string)
+
+    def _canonicalize(self, xml):  # TODO: move to utils or document.py
+        return xmlsec.canonicalize(xml)
+
+    @property
+    def _signed_info(self):  # TODO: move to utils or document.py
+        namespaces = ['{http://schemas.xmlsoap.org/soap/envelope/}Header', 
+                      '{http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd}Security', 
+                      '{http://www.w3.org/2000/09/xmldsig#}Signature', 
+                      '{http://www.w3.org/2000/09/xmldsig#}SignedInfo'
+        ]
+        element = self.xml_response
+        for ns in namespaces:
+            element = element.findall(ns)[0]
+        signed_info = ET.tostring(element)
+        return self._canonicalize(signed_info)
+
+    @property
+    def tbk_key(self):
+        if not self._tbk_key:
+            self._tbk_key = xmlsec.x509_extract_rsa_public_key(open(os.getenv('TBK_PUBLIC_CRT')).read())
+        return self._tbk_key
+
+    @property
+    def _signature_value(self):
+        namespaces = ['{http://schemas.xmlsoap.org/soap/envelope/}Header', 
+                      '{http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd}Security', 
+                      '{http://www.w3.org/2000/09/xmldsig#}Signature', 
+                      '{http://www.w3.org/2000/09/xmldsig#}SignatureValue'
+        ]
+        element = self.xml_response
+        for ns in namespaces:
+            element = element.findall(ns)[0]
+        signature_value = element.text
+        return signature_value
+
+    def _is_valid_signature(self):
+        if self._testing:
+            return True 
+
+        print "self._signed_info###############################"
+        print self._signed_info
+        print "self._signature_value###########################"
+        print self._signature_value
+        print "##############################"
+        return xmlsec.rsa_verify(self._signed_info, 
+                                 self._signature_value, 
+                                 self.tbk_key, c14n_exc=True)
 
     @property
     def params(self):
@@ -107,7 +161,12 @@ class Response(object):
             return self.response_code
 
     def validate(self):
-        if self.xml_error:
+        if not self._is_valid_signature():
+            self.error = 'SecurityError'
+            self.error_msg = 'invalid signature value'
+            self.user_error_msg = ''
+            self.extra = self.xml_error
+        elif self.xml_error:
             self.error = 'SoapServerError'
             self.error_msg = self.xml_error['faultstring']
             self.user_error_msg = ''
