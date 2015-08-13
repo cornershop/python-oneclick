@@ -56,7 +56,7 @@ class Validator(object):
         return ET.fromstring(xml_string)
 
     @property
-    def xml_result(self):
+    def params(self):
         if not self._xml_result:
             result = {}
 
@@ -94,8 +94,8 @@ class Validator(object):
 
     @property
     def response_code(self):
-        if self.xml_result and 'responseCode' in self.xml_result:
-            return str(self.xml_result['responseCode'])
+        if self.params and 'responseCode' in self.params:
+            return str(self.params['responseCode'])
         return None
 
     def response_code_display(self):
@@ -119,13 +119,13 @@ class Validator(object):
                 self.user_error_msg = self.error_msg
                 self.extra = {'response_code': self.response_code}
 
-            elif self.action == 'removeUser' and not self.xml_result['removed']:
+            elif self.action == 'removeUser' and not self.params['removed']:
                 self.error = 'removeUserError'
                 self.error_msg = 'imposible eliminar la inscripción'
                 self.user_error_msg = self.error_msg
                 self.extra = {'removed': False}
 
-            elif self.action == 'codeReverseOneClick' and self.xml_result['reversed'] != 'true':
+            elif self.action == 'codeReverseOneClick' and self.params['reversed'] != 'true':
                 self.error = 'codeReverseOneClickError'
                 self.error_msg = 'imposible revertir la compra'
                 self.user_error_msg = self.error_msg
