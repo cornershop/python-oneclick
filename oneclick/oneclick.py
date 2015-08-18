@@ -4,9 +4,8 @@ from client import Client
 
 class OneClick(object):
     client = None
-
-    def __init__(self):
-        self.client = Client()
+    def __init__(self, testing=False):
+        self.client = Client(testing)
 
     def init_inscription(self, email, response_url, username):
         params = {'email': email, 'username': username, 'responseURL': response_url}
@@ -23,7 +22,7 @@ class OneClick(object):
     def authorize(self, amount, tbk_user, username, buy_order):
         params = {'amount': amount, 'tbkUser': tbk_user,
                   'username': username, 'buyOrder': buy_order}
-        d = Document(action='Authorize', params=params)
+        d = Document(action='authorize', params=params)
         response = self.client.request('Authorize', d.doc)
         return response
 

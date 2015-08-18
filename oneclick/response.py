@@ -99,12 +99,6 @@ class Response(object):
     def _is_valid_signature(self):
         if self._testing:
             return True 
-
-        print "self._signed_info###############################"
-        print self._signed_info
-        print "self._signature_value###########################"
-        print self._signature_value
-        print "##############################"
         return xmlsec.rsa_verify(self._signed_info, 
                                  self._signature_value, 
                                  self.tbk_key, c14n_exc=True)

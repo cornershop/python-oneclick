@@ -16,7 +16,5 @@ class Client(object):
 
     def request(self, action, xml):
         response_content = self.client.send('initInscription', xml)
-        print "############"
-        print response_content
         response = Response(response_content, action, self._testing)
         return response
