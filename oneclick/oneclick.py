@@ -27,7 +27,7 @@ class OneClick(object):
         return response
 
     def reverse(self, buy_order):
-        params = {'buyOrder': buy_order}
+        params = {'buyorder': buy_order}
         d = Document(action='codeReverseOneClick', params=params)
         response = self.client.request('codeReverseOneClick', d.doc)
         return response
