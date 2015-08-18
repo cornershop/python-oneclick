@@ -1,5 +1,6 @@
 from pysimplesoap.client import SoapClient
 from response import Response
+from .logging import logger
 
 
 class Client(object):
@@ -15,6 +16,8 @@ class Client(object):
             trace=True)
 
     def request(self, action, xml):
-        response_content = self.client.send('initInscription', xml)
+        response_content = self.client.send(action, xml)
         response = Response(response_content, action, self._testing)
         return response
+
+    
