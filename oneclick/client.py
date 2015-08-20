@@ -13,6 +13,7 @@ class Client(object):
             soap_ns='soap11',
             location="https://webpay3g.orangepeople.cl:443/webpayserver/wswebpay/OneClickPaymentService",
             namespace="http://webservices.webpayserver.transbank.com/",
+            timeout=20,
             trace=True)
 
     def request(self, action, xml):
