@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import xml.etree.ElementTree as ET
 from pysimplesoap import xmlsec
-from M2Crypto import RSA, EVP
-import base64
 import os
 
 RESPONSE_CODE = {
@@ -53,7 +51,7 @@ class Response(object):
     def __init__(self, content, action, testing=False):
         self.error = None
         self._testing = testing
-        self.content = content
+        self.content = self._canonicalize(content)
         self.action = action
         self.xml_response = self.build_xml_response(content)
         self.validate()
@@ -65,12 +63,17 @@ class Response(object):
         return xmlsec.canonicalize(xml)
 
     @property
+    def tbk_key(self):
+        if not self._tbk_key:
+            self._tbk_key = xmlsec.x509_extract_rsa_public_key(open(os.getenv('TBK_PUBLIC_CRT')).read())
+        return self._tbk_key
+
+    @property
     def _signed_info(self):  # TODO: move to utils or document.py
-        namespaces = ['{http://schemas.xmlsoap.org/soap/envelope/}Header', 
+        namespaces = ['{http://schemas.xmlsoap.org/soap/envelope/}Header',
                       '{http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd}Security', 
-                      '{http://www.w3.org/2000/09/xmldsig#}Signature', 
-                      '{http://www.w3.org/2000/09/xmldsig#}SignedInfo'
-        ]
+                      '{http://www.w3.org/2000/09/xmldsig#}Signature',
+                      '{http://www.w3.org/2000/09/xmldsig#}SignedInfo']
         element = self.xml_response
         for ns in namespaces:
             element = element.findall(ns)[0]
@@ -78,18 +81,12 @@ class Response(object):
         return self._canonicalize(signed_info)
 
     @property
-    def tbk_key(self):
-        if not self._tbk_key:
-            self._tbk_key = xmlsec.x509_extract_rsa_public_key(open(os.getenv('TBK_PUBLIC_CRT')).read())
-        return self._tbk_key
-
-    @property
     def _signature_value(self):
-        namespaces = ['{http://schemas.xmlsoap.org/soap/envelope/}Header', 
+        namespaces = ['{http://schemas.xmlsoap.org/soap/envelope/}Header',
                       '{http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd}Security', 
-                      '{http://www.w3.org/2000/09/xmldsig#}Signature', 
-                      '{http://www.w3.org/2000/09/xmldsig#}SignatureValue'
-        ]
+                      '{http://www.w3.org/2000/09/xmldsig#}Signature',
+                      '{http://www.w3.org/2000/09/xmldsig#}SignatureValue']
+
         element = self.xml_response
         for ns in namespaces:
             element = element.findall(ns)[0]
@@ -98,30 +95,40 @@ class Response(object):
 
     def _is_valid_signature(self):
         if self._testing:
-            return True 
-        return xmlsec.rsa_verify(self._signed_info, 
-                                 self._signature_value, 
+            return True
+        return xmlsec.rsa_verify(self._signed_info,
+                                 self._signature_value,
                                  self.tbk_key, c14n_exc=True)
+
+    def str2bool(self, bool_string):  # TODO: move to utils
+        if bool_string.lower() == 'true':
+            return True
+        elif bool_string.lower() == 'false':
+            return False
+        raise TypeError
 
     @property
     def params(self):
         if not self._xml_result:
             result = {}
-
             for e in self.xml_response.findall('.//return'):
                 for children in e.getchildren():
-                    result[children.tag] = children.text
-                else:
-                    result['removed'] = bool(e.text)
-            if result:
-                params = VALID_RESPONSE_PARAMS[self.action]
-                obj = {}
-                for p in params:
-                    if p in result:
-                        obj[p] = result[p]
+                    if self.action == 'codeReverseOneClick':
+                        try:
+                            result[children.tag] = self.str2bool(children.text)
+                        except TypeError:
+                            result[children.tag] = children.text
                     else:
-                        obj[p] = None
-                self._xml_result = obj
+                        result[children.tag] = children.text
+                else:
+                    if self.action == 'removeUser':
+                        result['removed'] = self.str2bool(e.text)
+
+            obj = {}
+            for p in VALID_RESPONSE_PARAMS[self.action]:
+                obj[p] = result.get(p)
+                setattr(self, p, result.get(p))
+            self._xml_result = obj
         return self._xml_result
 
     @property
@@ -155,15 +162,15 @@ class Response(object):
             return self.response_code
 
     def validate(self):
-        if not self._is_valid_signature():
-            self.error = 'SecurityError'
-            self.error_msg = 'invalid signature value'
-            self.user_error_msg = ''
-            self.extra = self.xml_error
-        elif self.xml_error:
+        if self.xml_error:
             self.error = 'SoapServerError'
             self.error_msg = self.xml_error['faultstring']
-            self.user_error_msg = ''
+            self.user_error_msg = 'Error al realizar la operación'
+            self.extra = self.xml_error
+        elif not self._is_valid_signature():
+            self.error = 'SecurityError'
+            self.error_msg = 'invalid signature value'
+            self.user_error_msg = 'Error al realizar la operación'
             self.extra = self.xml_error
         else:
             if self.action in ['finishInscription', 'Authorize'] and int(self.response_code) != 0:
@@ -178,7 +185,7 @@ class Response(object):
                 self.user_error_msg = self.error_msg
                 self.extra = {'removed': False}
 
-            elif self.action == 'codeReverseOneClick' and self.params['reversed'] != 'true':
+            elif self.action == 'codeReverseOneClick' and not self.params['reversed']:
                 self.error = 'codeReverseOneClickError'
                 self.error_msg = 'imposible revertir la compra'
                 self.user_error_msg = self.error_msg

@@ -11,13 +11,13 @@ class ValidatorInitInscriptionTest(TestCase):
         xml_result = {'token': 'e7667c5f871fa39e6c05549eeddd1ff07a520a769fa84cc6994465cdb06cbb4b',
                       'urlWebpay': 'https://webpay3g.orangepeople.cl/webpayserver/bp_inscription.cgi'}
         self.assertEqual(xml_result, r.params)
-        #self.assertTrue(v.is_valid())
+        self.assertEqual('e7667c5f871fa39e6c05549eeddd1ff07a520a769fa84cc6994465cdb06cbb4b', r.token)
+        self.assertEqual('https://webpay3g.orangepeople.cl/webpayserver/bp_inscription.cgi', r.urlWebpay)
 
     def test_init_inscription_with_email_not_valid(self):
         xml = """<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><soap:Fault><faultcode>soap:Server</faultcode><faultstring>Invalid email</faultstring></soap:Fault></soap:Body></soap:Envelope>"""
         r = Response(xml, 'initInscription', True)
         self.assertEqual({'faultcode': 'soap:Server', 'faultstring': 'Invalid email'}, r.xml_error)
-        self.assertIsNone(r.params)
         self.assertFalse(r.is_valid())
         self.assertEqual(r.error, 'SoapServerError')
         self.assertEqual(r.error_msg, 'Invalid email')
@@ -26,7 +26,6 @@ class ValidatorInitInscriptionTest(TestCase):
         xml = """<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><soap:Fault><faultcode>soap:Server</faultcode><faultstring>Username is required</faultstring></soap:Fault></soap:Body></soap:Envelope>"""
         r = Response(xml, 'initInscription', True)
         self.assertEqual({'faultcode': 'soap:Server', 'faultstring': 'Username is required'}, r.xml_error)
-        self.assertIsNone(r.params)
         self.assertFalse(r.is_valid())
         self.assertEqual(r.error, 'SoapServerError')
         self.assertEqual(r.error_msg, 'Username is required')
@@ -35,7 +34,6 @@ class ValidatorInitInscriptionTest(TestCase):
         xml = """<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><soap:Fault><faultcode>soap:Server</faultcode><faultstring>URL is required</faultstring></soap:Fault></soap:Body></soap:Envelope>"""
         r = Response(xml, 'initInscription', True)
         self.assertEqual({'faultcode': 'soap:Server', 'faultstring': 'URL is required'}, r.xml_error)
-        self.assertIsNone(r.params)
         self.assertFalse(r.is_valid())
         self.assertEqual(r.error, 'SoapServerError')
         self.assertEqual(r.error_msg, 'URL is required')
@@ -49,12 +47,15 @@ class ValidatorFinishInscriptionTest(TestCase):
         xml_result = {'authCode': '1213', 'creditCardType': 'Visa', 'last4CardDigits': '6623',
                       'responseCode': '0', 'tbkUser': 'd2f27f36-b038-4937-8ea6-182b3de38cfd'}
         self.assertEqual(xml_result, r.params)
+        self.assertEqual('1213', r.authCode)
+        self.assertEqual('Visa', r.creditCardType)
+        self.assertEqual('6623', r.last4CardDigits)
+        self.assertEqual('d2f27f36-b038-4937-8ea6-182b3de38cfd', r.tbkUser)
         self.assertTrue(r.is_valid())
 
     def test_finish_inscription_with_token_not_valid(self):
         xml = """<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><soap:Fault><faultcode>soap:Server</faultcode><faultstring>Can't finish user inscription</faultstring></soap:Fault></soap:Body></soap:Envelope>"""
         r = Response(xml, 'finishInscription', True)
-        self.assertIsNone(r.params)
         self.assertFalse(r.is_valid())
         self.assertEqual(r.error, 'SoapServerError')
         self.assertEqual(r.error_msg, "Can't finish user inscription")
@@ -74,12 +75,15 @@ class ValidatorAuthorizeTest(TestCase):
         xml_result = {'authorizationCode': '1213', 'transactionId': '71498', 'creditCardType': 'Visa',
                       'last4CardDigits': '6623', 'responseCode': '0'}
         self.assertEqual(xml_result, r.params)
+        self.assertEqual('1213', r.authorizationCode)
+        self.assertEqual('71498', r.transactionId)
+        self.assertEqual('Visa', r.creditCardType)
+        self.assertEqual('6623', r.last4CardDigits)
         self.assertTrue(r.is_valid())
 
     def test_authorize_with_amount_not_valid(self):
         xml = """<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><soap:Fault><faultcode>soap:Server</faultcode><faultstring>Invalid amount</faultstring></soap:Fault></soap:Body></soap:Envelope>"""
         r = Response(xml, 'Authorize', True)
-        self.assertIsNone(r.params)
         self.assertFalse(r.is_valid())
         self.assertEqual(r.error, 'SoapServerError')
         self.assertEqual(r.error_msg, 'Invalid amount')
@@ -87,7 +91,6 @@ class ValidatorAuthorizeTest(TestCase):
     def test_authorize_with_tbk_user_blank(self):
         xml = """<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><soap:Fault><faultcode>soap:Server</faultcode><faultstring>Tbk User is required</faultstring></soap:Fault></soap:Body></soap:Envelope>"""
         r = Response(xml, 'Authorize', True)
-        self.assertIsNone(r.params)
         self.assertFalse(r.is_valid())
         self.assertEqual(r.error, 'SoapServerError')
         self.assertEqual(r.error_msg, 'Tbk User is required')
@@ -95,7 +98,6 @@ class ValidatorAuthorizeTest(TestCase):
     def test_authorize_when_tbk_user_is_not_valid(self):
         xml = """<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><soap:Fault><faultcode>soap:Server</faultcode><faultstring>Authorization failed</faultstring></soap:Fault></soap:Body></soap:Envelope>"""
         r = Response(xml, 'Authorize', True)
-        self.assertIsNone(r.params)
         self.assertFalse(r.is_valid())
         self.assertEqual(r.error, 'SoapServerError')
         self.assertEqual(r.error_msg, 'Authorization failed')
@@ -103,7 +105,6 @@ class ValidatorAuthorizeTest(TestCase):
     def test_authorize_with_username_blank(self):
         xml = """<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><soap:Fault><faultcode>soap:Client</faultcode><faultstring>Unmarshalling Error: For input string: "" </faultstring></soap:Fault></soap:Body></soap:Envelope>"""
         r = Response(xml, 'Authorize', True)
-        self.assertIsNone(r.params)
         self.assertFalse(r.is_valid())
         self.assertEqual(r.error, 'SoapServerError')
         self.assertEqual(r.error_msg, 'Unmarshalling Error: For input string: "" ')
@@ -119,13 +120,11 @@ class ValidatorAuthorizeTest(TestCase):
     def test_authorize_with_maximum_payments_exceeded(self):
         xml = """<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Header><wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" soap:mustUnderstand="1"><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#" Id="SIG-8418"><ds:SignedInfo><ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"><ec:InclusiveNamespaces xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#" PrefixList="soap"/></ds:CanonicalizationMethod><ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><ds:Reference URI="#id-8417"><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"><ec:InclusiveNamespaces xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#" PrefixList=""/></ds:Transform></ds:Transforms><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>OGBAVz4h7um3+DFrHvBzahVmsDE=</ds:DigestValue></ds:Reference></ds:SignedInfo><ds:SignatureValue>ZPg+X9p6U6cArwO93sZsU/c+FhKk0iiE6nLeS6gZZjsEvMDMpOjU6g5FJVUMVcXDJB2CkSBzOrEI\nD4awwE6vUWQ7jxlgchiME5HeQqok1wI9fMmNo3UfVt52/In6aCNrYeHlbYi+Zeod/05DUbTyznQS\nNax6v/WT2MUBs6usNe3aT3ryzY7WRuGdrP2lS3tmUQasfJBuZzCn7BqZULjWmi2+nlsmiVafIK0W\nOmNEV9XyUhsOKtrVEF7JGuJ9dJZP7cdYKVUOzFRnt/rdqHflghA4mr/WzEHVpVliA1MvgzJ0XvOw\nCRb4slH6EuSYNKmMZUoKDe3ShbcsBd0fz6RJwSoL5RN6mD+EA5KudbPimXD90WrqJCGbu1nIfXtr\n9DlmbEjobPApaRJ2e+m9of5KhoFNF76OXXumrrGgp8N/k/+jMyfX0abbLtzZfebvyWbeqO14XCzw\nyFO22RfVff9cpYS6vadUuu7dNe67QmbuZk8uTu+QNqSozO7wuDL336fNkMBafohKcSCzmZuXTqKp\nt4OJWYzINMKaypT06IWrGL83P3GBcqadKKo19IiZtiaQ9XJIhrZixYtHzDGV1cKKI7v+bBhZed+1\n2MR6e5ro6VdsMQCZ7C/BRT0sPd/0tinV4eJdNAquWT/a62c4HlCUAw/9iSbVzAhNV9QaCKGPX6Q=</ds:SignatureValue><ds:KeyInfo Id="KI-F6DDC585AC5A582DD2142573691238412626"><wsse:SecurityTokenReference wsu:Id="STR-F6DDC585AC5A582DD2142573691238412627"><ds:X509Data><ds:X509IssuerSerial><ds:X509IssuerName>CN=10,OU=ExperTI,O=ExperTI,L=Santiago,ST=Santiago,C=CL,1.2.840.113549.1.9.1=#16116a636572646140657870657274692e636c</ds:X509IssuerName><ds:X509SerialNumber>1401281826</ds:X509SerialNumber></ds:X509IssuerSerial></ds:X509Data></wsse:SecurityTokenReference></ds:KeyInfo></ds:Signature></wsse:Security></soap:Header><soap:Body xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="id-8417"><ns2:authorizeResponse xmlns:ns2="http://webservices.webpayserver.transbank.com/"><return><creditCardType>Visa</creditCardType><last4CardDigits>6623</last4CardDigits><responseCode>-98</responseCode><transactionId>71686</transactionId></return></ns2:authorizeResponse></soap:Body></soap:Envelope>"""
         r = Response(xml, 'Authorize', True)
-        #self.assertIsNone(v.xml_result)
         self.assertFalse(r.is_valid())
 
     def test_authorize_with_maximum_number_of_payments_per_day_exceeded(self):
         xml = """<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Header><wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" soap:mustUnderstand="1"><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#" Id="SIG-8418"><ds:SignedInfo><ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"><ec:InclusiveNamespaces xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#" PrefixList="soap"/></ds:CanonicalizationMethod><ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><ds:Reference URI="#id-8417"><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"><ec:InclusiveNamespaces xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#" PrefixList=""/></ds:Transform></ds:Transforms><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>OGBAVz4h7um3+DFrHvBzahVmsDE=</ds:DigestValue></ds:Reference></ds:SignedInfo><ds:SignatureValue>ZPg+X9p6U6cArwO93sZsU/c+FhKk0iiE6nLeS6gZZjsEvMDMpOjU6g5FJVUMVcXDJB2CkSBzOrEI\nD4awwE6vUWQ7jxlgchiME5HeQqok1wI9fMmNo3UfVt52/In6aCNrYeHlbYi+Zeod/05DUbTyznQS\nNax6v/WT2MUBs6usNe3aT3ryzY7WRuGdrP2lS3tmUQasfJBuZzCn7BqZULjWmi2+nlsmiVafIK0W\nOmNEV9XyUhsOKtrVEF7JGuJ9dJZP7cdYKVUOzFRnt/rdqHflghA4mr/WzEHVpVliA1MvgzJ0XvOw\nCRb4slH6EuSYNKmMZUoKDe3ShbcsBd0fz6RJwSoL5RN6mD+EA5KudbPimXD90WrqJCGbu1nIfXtr\n9DlmbEjobPApaRJ2e+m9of5KhoFNF76OXXumrrGgp8N/k/+jMyfX0abbLtzZfebvyWbeqO14XCzw\nyFO22RfVff9cpYS6vadUuu7dNe67QmbuZk8uTu+QNqSozO7wuDL336fNkMBafohKcSCzmZuXTqKp\nt4OJWYzINMKaypT06IWrGL83P3GBcqadKKo19IiZtiaQ9XJIhrZixYtHzDGV1cKKI7v+bBhZed+1\n2MR6e5ro6VdsMQCZ7C/BRT0sPd/0tinV4eJdNAquWT/a62c4HlCUAw/9iSbVzAhNV9QaCKGPX6Q=</ds:SignatureValue><ds:KeyInfo Id="KI-F6DDC585AC5A582DD2142573691238412626"><wsse:SecurityTokenReference wsu:Id="STR-F6DDC585AC5A582DD2142573691238412627"><ds:X509Data><ds:X509IssuerSerial><ds:X509IssuerName>CN=10,OU=ExperTI,O=ExperTI,L=Santiago,ST=Santiago,C=CL,1.2.840.113549.1.9.1=#16116a636572646140657870657274692e636c</ds:X509IssuerName><ds:X509SerialNumber>1401281826</ds:X509SerialNumber></ds:X509IssuerSerial></ds:X509Data></wsse:SecurityTokenReference></ds:KeyInfo></ds:Signature></wsse:Security></soap:Header><soap:Body xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="id-8417"><ns2:authorizeResponse xmlns:ns2="http://webservices.webpayserver.transbank.com/"><return><creditCardType>Visa</creditCardType><last4CardDigits>6623</last4CardDigits><responseCode>-99</responseCode><transactionId>71686</transactionId></return></ns2:authorizeResponse></soap:Body></soap:Envelope>"""
         r = Response(xml, 'Authorize', True)
-        #self.assertIsNone(v.xml_result)
         self.assertFalse(r.is_valid())
 
 
@@ -133,14 +132,15 @@ class ValidatorReverseTest(TestCase):
     def test_reverse_ok(self):
         xml = """<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Header><wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" soap:mustUnderstand="1"><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#" Id="SIG-8432"><ds:SignedInfo><ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"><ec:InclusiveNamespaces xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#" PrefixList="soap"/></ds:CanonicalizationMethod><ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><ds:Reference URI="#id-8431"><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"><ec:InclusiveNamespaces xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#" PrefixList=""/></ds:Transform></ds:Transforms><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>d5eiiC8lU9K+RwEa1fYFuCK2uOI=</ds:DigestValue></ds:Reference></ds:SignedInfo><ds:SignatureValue>R075K3Tm1onQwi7Oxcw+Ha/31BQ0r4of5cNqOg6e/D3539aDw9m7LEFaMZoqtZ+G8aNlf/Nm1l12\ntG7bglfVO+/HrP6MxfC/VVLLFUO4EK7MCvAWa0qO4YaGXAE76rzN6ouO3W3e7mDXfeb3ChVSEobT\nX1LEOlB7ICW3YZXOYhnqyCxjoIkX8PdxDTEc4f3k9PjNaaXuVCzHg4X0KkPFOnRT1wXLLmgJoSOP\nnPjzVch2b+Z3QHYMIgd2d4intjz2XfwVj7SdjhCixpUa0foJR83NMykbSLFgxkJqYeYhhDLl8hvJ\nBd5vt2/Wx6R60Ctxgk3+NyKiuWXyYqMv5E4wzuXh+WSYQKccApE+6S4+E9V/zVO21F6cClhCEHxZ\nTH9ZikfBKUm5KSh9B7FqbH7DbnF4BhJDNEZXOvgBKvQNwt9hhsa07e/Kk9ZF+8vW5LpNTzf1sBJO\ndpiEZW+cKCOM8/xTscobqoIg3eRZOKdHe/gWoyyvc7PHHKQcc7bjRIUR53Pc0VYAXSB2MrV8GxL7\n13OxX4m/MrNX/M/6982n/QDW/X1EDHOrvKyknIjZ4IVkqpAm5QRZvlmmeWCL1zDiaIZkW4achjkZ\n1KVfhIwypN3MAgDa5a1JJxs00fKuDRTHs9BFrNxIm6UrR+isy+MD4j473hJUnvNT7xqZv0Ljvfg=</ds:SignatureValue><ds:KeyInfo Id="KI-F6DDC585AC5A582DD2142573852294212647"><wsse:SecurityTokenReference wsu:Id="STR-F6DDC585AC5A582DD2142573852294212648"><ds:X509Data><ds:X509IssuerSerial><ds:X509IssuerName>CN=10,OU=ExperTI,O=ExperTI,L=Santiago,ST=Santiago,C=CL,1.2.840.113549.1.9.1=#16116a636572646140657870657274692e636c</ds:X509IssuerName><ds:X509SerialNumber>1401281826</ds:X509SerialNumber></ds:X509IssuerSerial></ds:X509Data></wsse:SecurityTokenReference></ds:KeyInfo></ds:Signature></wsse:Security></soap:Header><soap:Body xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="id-8431"><ns2:codeReverseOneClickResponse xmlns:ns2="http://webservices.webpayserver.transbank.com/"><return><reverseCode>3619160862457231902</reverseCode><reversed>true</reversed></return></ns2:codeReverseOneClickResponse></soap:Body></soap:Envelope>"""
         r = Response(xml, 'codeReverseOneClick', True)
-        xml_result = {'reverseCode': '3619160862457231902', 'reversed': 'true'}
+        xml_result = {'reverseCode': '3619160862457231902', 'reversed': True}
         self.assertEqual(xml_result, r.params)
+        self.assertEqual('3619160862457231902', r.reverseCode)
+        self.assertEqual(True, r.reversed)
         self.assertTrue(r.is_valid())
 
     def test_authorize_with_buyorder_blank(self):
         xml = """<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><soap:Fault><faultcode>soap:Client</faultcode><faultstring>Unmarshalling Error: For input string: "" </faultstring></soap:Fault></soap:Body></soap:Envelope>"""
         r = Response(xml, 'codeReverseOneClick', True)
-        self.assertIsNone(r.params)
         self.assertFalse(r.is_valid())
         self.assertEqual(r.error, 'SoapServerError')
         self.assertEqual(r.error_msg, 'Unmarshalling Error: For input string: "" ')
@@ -158,18 +158,15 @@ class ValidatorRemoveUserTest(TestCase):
     def test_remove_user_with_ok_response(self):
         xml = """<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Header><wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" soap:mustUnderstand="1"><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#" Id="SIG-8436"><ds:SignedInfo><ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"><ec:InclusiveNamespaces xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#" PrefixList="soap"/></ds:CanonicalizationMethod><ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><ds:Reference URI="#id-8435"><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"><ec:InclusiveNamespaces xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#" PrefixList=""/></ds:Transform></ds:Transforms><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>BtK1c6IQQt90kV7NJUMfdDFWdjU=</ds:DigestValue></ds:Reference></ds:SignedInfo><ds:SignatureValue>VEH0ndx62nnFZYDmXfF9vnAksQbIn/epOBQhomEOfLOrTv0Zzi7q71uCQbUYUyF49z2MM56vzdI8\n2LVqSUY/ahsBgc/9L1+yK6TjuqxR/2nVRIil9QbyPjquCWYxnQbu4Pw442xf2savBgGQFyS+0NLJ\nqeKPaztSysUgJ2TKXFOeS7H3DgHIggz1har94US8WTFSgCOzfBeVhX+wNxZNgGUj4y/UO/4kuR1y\nAd/om6FX8EAre3EsawCOrVqLNSCG8kOW57ujcQQlgXKL0hI71C7HT62ysph5+hKmwAiyMAWaERr4\nsYxVI3tc3A/92NyWy6cg52xVSjJARLfLiqV/Dc1EoJqMFu6KLri3PdR9muIIUNp2heUVInaW6Xh6\n/7TnZSIXqwF0v0eMckTLU2amr9iRR4ipYHk/AmmInYMGtULXgNlHhRhk0UgvHqn0rsjVueDfHLtb\na+kNNExBqI1gazz0EV3NvhOBeFsu04YvyR2y4PTZokWLk3zfsmxTVbN9QIBGfKoK+E6ty4RlWOTH\nIIUzhDsP3yrjgC4UH2Zs7Kl/HYMXPkfZ0LoMNmJW2C5+BIYs8WDxXkpLkbtaEcfDpXfXTSsIyH3Y\nCQ2PguHy8NOcnETXlLieALLMVXvCmq3O0DoE6SWHq9URwqFnataMbHZhLOecDp3XmwMex7uNLac=</ds:SignatureValue><ds:KeyInfo Id="KI-F6DDC585AC5A582DD2142573978894412653"><wsse:SecurityTokenReference wsu:Id="STR-F6DDC585AC5A582DD2142573978894412654"><ds:X509Data><ds:X509IssuerSerial><ds:X509IssuerName>CN=10,OU=ExperTI,O=ExperTI,L=Santiago,ST=Santiago,C=CL,1.2.840.113549.1.9.1=#16116a636572646140657870657274692e636c</ds:X509IssuerName><ds:X509SerialNumber>1401281826</ds:X509SerialNumber></ds:X509IssuerSerial></ds:X509Data></wsse:SecurityTokenReference></ds:KeyInfo></ds:Signature></wsse:Security></soap:Header><soap:Body xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="id-8435"><ns2:removeUserResponse xmlns:ns2="http://webservices.webpayserver.transbank.com/"><return>true</return></ns2:removeUserResponse></soap:Body></soap:Envelope>"""
         r = Response(xml, 'removeUser', True)
-        xml_result = {'removed': True}
-        self.assertEqual(xml_result, r.params)
+        self.assertEqual(True, r.removed)
         self.assertTrue(r.is_valid())
 
     def test_remove_user_with_tbk_user_blank(self):
         xml = """<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><soap:Fault><faultcode>soap:Server</faultcode><faultstring>Tbk User is required</faultstring></soap:Fault></soap:Body></soap:Envelope>"""
         r = Response(xml, 'removeUser', True)
-        self.assertIsNone(r.params)
         self.assertFalse(r.is_valid())
 
     def test_remove_user_with_username_blank(self):
         xml = """<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><soap:Fault><faultcode>soap:Server</faultcode><faultstring>Username is required</faultstring></soap:Fault></soap:Body></soap:Envelope>"""
         r = Response(xml, 'removeUser', True)
-        self.assertIsNone(r.params)
         self.assertFalse(r.is_valid())

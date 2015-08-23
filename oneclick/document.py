@@ -63,7 +63,6 @@ class Document(object):
         # Sign the SHA1 digest of the signed xml using RSA cipher
         pkey = RSA.load_key(self.key)
         signature = pkey.sign(hashlib.sha1(xml).digest())
-        # build the mapping (placeholders) to create the final xml signed message
         return base64.b64encode(signature)
 
     def build_params_xml(self, params):
@@ -77,9 +76,11 @@ class Document(object):
         # 1) build body
         body_params = self.build_params_xml(self._params)
         params = {'action': self._action, 'params': body_params, 'body_id': body_id}
-        body2 = BODY_TMPL % params
+        body = BODY_TMPL % params
+
         # 2) firm with body
-        digest_value = self.get_digest_value(body2, True)
+        digest_value = self.get_digest_value(body, True)
+
         # 3) assign
         xml_to_sign = SIGN_ENV_TMPL % {'digest_value': digest_value, 'body_id': body_id}
         signature_value = self.rsa_sign(xml=xml_to_sign)
@@ -87,5 +88,6 @@ class Document(object):
         params = {'signature_value': signature_value, 'issuer_name': self.get_issuer_name(),
                   'serial_number': self.get_serial_number(), 'digest_value': digest_value,
                   'body_id': body_id, 'action': self._action, 'params': body_params}
+
         # 4) build headers
         return XML_TMPL % params

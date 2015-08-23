@@ -20,5 +20,3 @@ class Client(object):
         response_content = self.client.send(action, xml)
         response = Response(response_content, action, self._testing)
         return response
-
-    
