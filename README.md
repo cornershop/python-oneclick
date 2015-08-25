@@ -13,11 +13,82 @@ Setup:
 
 ## Usage
 
-First set environment variable for commerce
+1. First set environment variable for commerce
+
 ```
 os.environ['TBK_COMMERCE_KEY'] = "KEY"
 os.environ['TBK_COMMERCE_CRT'] = "CERTIFICATE"
 ```
+
+2. Init Inscription
+
+```
+#  request
+oneclick = OneClick()
+resp = oneclick.init_inscription(email='your@email.com', 
+                                 redirect_url='http://your_domain.com',
+                                 username='your_username')
+#  response example
+resp.is_valid()  # True
+resp.token  # e7665f871fa39e6c05549eeddd1ff07a520a769fa84cc6994465cdb06cbb4b
+resp.urlWebpay  # https://webpay3g.orangepeople.cl/webpayserver/bp_inscription.cgi
+```
+
+3. Finish Inscription
+
+```
+oneclick = OneClick()
+#  Transbank send the TBK_TOKEN to the redirect_url given on init_inscription
+resp = oneclick.finish_inscription(token=params['TBK_TOKEN'])
+#  response example
+resp.is_valid()  # True
+resp.authCode  # 1234
+resp.creditCardType  # Visa
+resp.last4CardDigits  # 6623
+resp.tbkUser  # d2f27f36-b038-4937-8aa6-182b3de38cfd
+```
+
+4. Authorize
+
+```
+oneclick = OneClick()
+#  request
+resp = oneclick.authorize(amount_to_charge=10000, 
+                          tbk_user='d2f27f36-b038-4937-8aa6-182b3de38cfd',
+                          username='your_username', 
+                          buy_order='20150820155538859')
+#  response example
+resp.is_valid()  # True
+resp.authorizationCode  # 1213
+resp.transactionId  #  71498
+resp.creditCardType  #  Visa
+resp.last4CardDigits  #  6623
+```
+
+5. Reverse
+
+```
+oneclick = OneClick()
+#  request
+resp = oneclick.reverse(buy_order='20150820155538859')
+#  response example
+resp.is_valid()  # True
+resp.reverseCode  # 3619160862457231902
+resp.reversed  # True
+```
+
+5. Reverse
+
+```
+oneclick = OneClick()
+#  request
+resp = oneclick.remove_user(tbk_user='d2f27f36-b038-4937-8aa6-182b3de38cfd', 
+                            username='your_username')
+#  response example
+resp.is_valid()  # True
+resp.removed  # True
+```
+
 
 ## Tests
 
@@ -37,8 +108,6 @@ You can contribute by forking the project, adding the contributions and creating
 ## License
 
 The MIT License
-
-Copyright (c) 2010-2014 Google, Inc. http://angularjs.org
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
