@@ -13,13 +13,13 @@ Setup:
 
 ## Usage
 
-1. First set environment variable for commerce
+First set environment variable for commerce
 
 ```
 os.environ['TBK_COMMERCE_KEY'] = "KEY"
 os.environ['TBK_COMMERCE_CRT'] = "CERTIFICATE"
 ```
-2. Init Inscription
+Init Inscription
 
 ```
 #  request
@@ -32,7 +32,7 @@ resp.is_valid()  # True
 resp.token  # e7665f871fa39e6c05549eeddd1ff07a520a769fa84cc6994465cdb06cbb4b
 resp.urlWebpay  # https://webpay3g.orangepeople.cl/webpayserver/bp_inscription.cgi
 ```
-3. Finish Inscription
+Finish Inscription
 
 ```
 oneclick = OneClick()
@@ -45,7 +45,7 @@ resp.creditCardType  # Visa
 resp.last4CardDigits  # 6623
 resp.tbkUser  # d2f27f36-b038-4937-8aa6-182b3de38cfd
 ```
-4. Authorize
+Authorize
 
 ```
 oneclick = OneClick()
@@ -61,7 +61,7 @@ resp.transactionId  #  71498
 resp.creditCardType  #  Visa
 resp.last4CardDigits  #  6623
 ```
-5. Reverse
+Reverse
 
 ```
 oneclick = OneClick()
@@ -72,7 +72,7 @@ resp.is_valid()  # True
 resp.reverseCode  # 3619160862457231902
 resp.reversed  # True
 ```
-6. remove user
+remove user
 
 ```
 oneclick = OneClick()
