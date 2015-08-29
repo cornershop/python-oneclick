@@ -47,7 +47,6 @@ setup(
         'PySimpleSOAP==1.16',
         'arrow==0.6.0',
         'future==0.12.3',
-        'hashlib',
     ],
     tests_require=[
         'mock>=1.0.1',

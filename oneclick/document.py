@@ -1,6 +1,6 @@
 from pysimplesoap import xmlsec
 import arrow
-import hashlib
+import md5
 import os
 import base64
 from M2Crypto import RSA
@@ -53,7 +53,7 @@ class Document(object):
         return xmlsec.sha1_hash_digest(xml)
 
     def get_body_id(self):
-        m = hashlib.md5()
+        m = md5.new()
         m.update("{}{}{}".format(self._action, self._params,
                  arrow.now().format('YYYY-MM-DD HH:mm:ss ZZ')))
         return m.hexdigest()
