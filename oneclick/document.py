@@ -1,9 +1,9 @@
 from pysimplesoap import xmlsec
 import arrow
 import md5
+import rsa
 import os
 import base64
-from M2Crypto import RSA
 
 SIGN_ENV_TMPL = """<ds:SignedInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"></ds:CanonicalizationMethod><ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"></ds:SignatureMethod><ds:Reference URI="#%(body_id)s"><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"></ds:Transform></ds:Transforms><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"></ds:DigestMethod><ds:DigestValue>%(digest_value)s</ds:DigestValue></ds:Reference></ds:SignedInfo>"""
 
@@ -59,11 +59,11 @@ class Document(object):
         return m.hexdigest()
 
     def rsa_sign(self, xml):
-        "Sign an XML document using RSA"
-        # Sign the SHA1 digest of the signed xml using RSA cipher
-        pkey = RSA.load_key(self.key)
-        signature = pkey.sign(hashlib.sha1(xml).digest())
-        return base64.b64encode(signature)
+        with open(self.key) as privatefile:
+            keydata = privatefile.read()
+            key = rsa.PrivateKey.load_pkcs1(keydata)
+            signature = rsa.sign(xml, key, 'SHA-1')
+            return base64.b64encode(signature)
 
     def build_params_xml(self, params):
         params_xml = ""
