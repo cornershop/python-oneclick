@@ -1,8 +1,4 @@
 
-## Motivation
-
-OneClick
-
 ## Installation
 
 Setup:
