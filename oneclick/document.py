@@ -1,4 +1,4 @@
-from pysimplesoap import xmlsec
+from OpenSSL import crypto
 import arrow
 import md5
 import rsa
@@ -40,17 +40,22 @@ class Document(object):
     @property
     def x509(self):
         if not self._x509:
-            self._x509 = xmlsec.x509_parse_cert(self.cert)
+            self._x509 = crypto.load_certificate(crypto.FILETYPE_PEM, 
+                                                 open(self.cert).read())
         return self._x509
 
     def get_issuer_name(self):
-        return self.x509.get_issuer().as_text()
-
+        issuer = self.x509.get_issuer()
+        component_list = []
+        for component in issuer.get_components():
+            component_list.append('{}={}'.format(component[0], component[1]))
+        return ", ".join(component_list)
+        
     def get_serial_number(self):
-        return self.x509.get_serial_number()
+        return str(self.x509.get_serial_number())
 
     def get_digest_value(self, xml, c14n_exc=True):
-        return xmlsec.sha1_hash_digest(xml)
+        return base64.b64encode(rsa.pkcs1._hash(xml, 'SHA-1'))
 
     def get_body_id(self):
         m = md5.new()

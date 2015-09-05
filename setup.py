@@ -43,7 +43,6 @@ setup(
     keywords=['oneclick', 'one_click', 'transbank', 'webpay', 'chile', 'payments'],
     install_requires=[
         'pytz',
-        'PySimpleSOAP==1.16',
         'arrow==0.6.0',
         'future==0.12.3',
         'rsa',

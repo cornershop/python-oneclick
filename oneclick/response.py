@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import xml.etree.ElementTree as ET
-from pysimplesoap import xmlsec
+from OpenSSL import crypto
+import rsa
+from cStringIO import StringIO
 import os
 
 RESPONSE_CODE = {
@@ -59,14 +61,20 @@ class Response(object):
     def build_xml_response(self, xml_string):
         return ET.fromstring(xml_string)
 
-    def _canonicalize(self, xml):  # TODO: move to utils or document.py
-        return xmlsec.canonicalize(xml)
+    def _canonicalize(self, xml):  # TODO: move to utils or document.p
+        output = StringIO()
+        from .simplexml import SimpleXMLElement
+        SimpleXMLElement(xml).write_c14n(output, exclusive=True)
+        return output.getvalue()
+        
 
     @property
     def tbk_key(self):
         if not self._tbk_key:
-            self._tbk_key = xmlsec.x509_extract_rsa_public_key(open(os.getenv('TBK_PUBLIC_CRT')).read())
+            self._tbk_key = crypto.load_certificate(crypto.FILETYPE_PEM, 
+                                                    open(os.getenv('TBK_PUBLIC_CRT')).read())   
         return self._tbk_key
+
 
     @property
     def _signed_info(self):  # TODO: move to utils or document.py
@@ -96,9 +104,7 @@ class Response(object):
     def _is_valid_signature(self):
         if self._testing:
             return True
-        return xmlsec.rsa_verify(self._signed_info,
-                                 self._signature_value,
-                                 self.tbk_key, c14n_exc=True)
+        return rsa.verify(self._signed_info, self._signature_value, self.tbk_key)
 
     def str2bool(self, bool_string):  # TODO: move to utils
         if bool_string.lower() == 'true':

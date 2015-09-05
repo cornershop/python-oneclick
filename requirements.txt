@@ -1,7 +1,7 @@
 nose==1.3.4
-git+git://github.com/pysimplesoap/pysimplesoap.git#egg=pysimplesoap
 pytz
 M2Crypto==0.22.3
-PySimpleSOAP==1.16
 arrow==0.6.0
 future==0.12.3
+pyOpenSSL
+urllib2
