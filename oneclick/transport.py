@@ -87,7 +87,7 @@ else:
             if httplib2.__version__ >= '0.3.0':
                 kwargs['timeout'] = timeout
             if httplib2.__version__ >= '0.7.0':
-                kwargs['disable_ssl_certificate_validation'] = cacert is None
+                kwargs['disable_ssl_certificate_validation'] = True
                 kwargs['ca_certs'] = cacert
             httplib2.Http.__init__(self, **kwargs)
 
