@@ -57,10 +57,10 @@ try:
     import httplib2
     if sys.version > '3' and httplib2.__version__ <= "0.7.7":
         import http.client
-        # httplib2 workaround: check_hostname needs a SSL context with either 
+        # httplib2 workaround: check_hostname needs a SSL context with either
         #                      CERT_OPTIONAL or CERT_REQUIRED
         # see https://code.google.com/p/httplib2/issues/detail?id=173
-        orig__init__ = http.client.HTTPSConnection.__init__ 
+        orig__init__ = http.client.HTTPSConnection.__init__
         def fixer(self, host, port, key_file, cert_file, timeout, context,
                         check_hostname, *args, **kwargs):
             chk = kwargs.get('disable_ssl_certificate_validation', True) ^ True
@@ -89,6 +89,7 @@ else:
             if httplib2.__version__ >= '0.7.0':
                 kwargs['disable_ssl_certificate_validation'] = True
                 kwargs['ca_certs'] = cacert
+            kwargs['disable_ssl_certificate_validation'] = True
             httplib2.Http.__init__(self, **kwargs)
 
     _http_connectors['httplib2'] = Httplib2Transport
@@ -255,4 +256,4 @@ def get_Http():
 
 
 # define the default HTTP connection class (it can be changed at runtime!):
-set_http_wrapper('urllib2')
+set_http_wrapper('httplib2')
