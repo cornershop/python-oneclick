@@ -45,8 +45,8 @@ setup(
         'pytz',
         'arrow==0.6.0',
         'future==0.12.3',
-        'rsa',
-        'requests'
+        'rsa==3.0',
+        'requests==2.5.3'
     ],
     tests_require=[
         'mock>=1.0.1',
