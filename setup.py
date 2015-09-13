@@ -47,7 +47,8 @@ setup(
         'future==0.12.3',
         'rsa',
         'pycurl',
-        'httplib2'
+        'httplib2',
+        'urllib2'
     ],
     tests_require=[
         'mock>=1.0.1',
