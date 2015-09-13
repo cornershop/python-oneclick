@@ -1,6 +1,5 @@
 from response import Response
-from .logging import logger
-from .transport import get_Http
+import requests
 import sys
 if sys.version > '3':
     unicode = str
@@ -15,13 +14,8 @@ class Client(object):
     def __init__(self, testing=False):
         self._testing = testing
         self.location = "https://webpay3g.orangepeople.cl:443/webpayserver/wswebpay/OneClickPaymentService"
-        Http = get_Http()
-        self.http = Http(timeout=20)
-
 
     def send(self, action, xml):
-        http_method = str('POST')
-        location = str(self.location)
         soap_action = str(action)
 
         headers = {
@@ -33,10 +27,8 @@ class Client(object):
         if sys.version < '3':
             headers = dict((str(k), str(v)) for k, v in headers.items())
 
-        response, content = self.http.request(
-            location, http_method, body=xml, headers=headers)
-
-        return content
+        d = requests.post(self.location, verify=False, data=xml, headers=headers)
+        return d.text
 
     def request(self, action, xml):
         response_content = self.send(action, xml)
