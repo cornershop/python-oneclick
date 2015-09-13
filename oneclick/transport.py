@@ -77,7 +77,7 @@ else:
         _wrapper_name = 'httplib2'
 
         def __init__(self, timeout, proxy=None, cacert=None, sessions=False):
-#            httplib2.debuglevel=4 
+#            httplib2.debuglevel=4
             kwargs = {}
             if proxy:
                 import socks
@@ -255,4 +255,4 @@ def get_Http():
 
 
 # define the default HTTP connection class (it can be changed at runtime!):
-set_http_wrapper()
+set_http_wrapper('urllib2')
