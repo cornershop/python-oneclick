@@ -46,6 +46,7 @@ setup(
         'arrow==0.6.0',
         'future==0.12.3',
         'rsa==3.0',
+        'pyOpenSSL==0.15.1',
         'requests==2.5.3'
     ],
     tests_require=[

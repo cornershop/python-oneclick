@@ -3,5 +3,5 @@ pytz
 M2Crypto==0.22.3
 arrow==0.6.0
 future==0.12.3
-pyOpenSSL
+pyOpenSSL==0.15.1
 requests==2.5.3
