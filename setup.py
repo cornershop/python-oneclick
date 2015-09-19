@@ -47,7 +47,8 @@ setup(
         'future==0.12.3',
         'rsa==3.0',
         'pyOpenSSL==0.15.1',
-        'requests==2.5.3'
+        'requests==2.5.3',
+        'requests_toolbelt'
     ],
     tests_require=[
         'mock>=1.0.1',

@@ -1,5 +1,6 @@
 from response import Response
 import requests
+from requests_toolbelt import SSLAdapter
 import sys
 if sys.version > '3':
     unicode = str
@@ -27,7 +28,10 @@ class Client(object):
         if sys.version < '3':
             headers = dict((str(k), str(v)) for k, v in headers.items())
 
-        d = requests.post(self.location, verify=False, data=xml, headers=headers)
+        adapter = SSLAdapter('TLSv1')
+        req = requests.Session()
+        req.mount('https://', adapter)
+        d = req.post(self.location, verify=False, data=xml, headers=headers)
         return d.text
 
     def request(self, action, xml):
