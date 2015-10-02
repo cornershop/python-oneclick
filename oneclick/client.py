@@ -9,14 +9,21 @@ class Client(object):
 
     def __init__(self, testing=False):
         self._testing = testing
+        if testing:
+            location = 'https://webpay3g.orangepeople.cl:443/webpayserver/wswebpay/OneClickPaymentService'
+        else:
+            location = 'https://webpay3g.transbank.cl/webpayserver/wswebpay/OneClickPaymentService'
+
         self.client = SoapClient(
             soap_ns='soap11',
-            location="https://webpay3g.orangepeople.cl:443/webpayserver/wswebpay/OneClickPaymentService",
+            location=location,
             namespace="http://webservices.webpayserver.transbank.com/",
             timeout=20,
             trace=True)
 
     def request(self, action, xml):
         response_content = self.client.send(action, xml)
-        response = Response(response_content, action, self._testing)
+        response = Response(response_content, action, False)
         return response
+
+
