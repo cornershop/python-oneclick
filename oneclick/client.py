@@ -23,7 +23,7 @@ class Client(object):
 
     def request(self, action, xml):
         response_content = self.client.send(action, xml)
-        response = Response(response_content, action, False)
+        response = Response(response_content, action, True)
         return response
 
 
