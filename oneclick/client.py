@@ -12,7 +12,7 @@ class Client(object):
         if testing:
             location = 'https://webpay3g.orangepeople.cl:443/webpayserver/wswebpay/OneClickPaymentService'
         else:
-            location = 'https://webpay3g.transbank.cl/webpayserver/wswebpay/OneClickPaymentService'
+            location = 'https://webpay3g.transbank.cl:443/webpayserver/wswebpay/OneClickPaymentService'
 
         self.client = SoapClient(
             soap_ns='soap11',
