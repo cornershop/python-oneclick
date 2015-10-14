@@ -47,6 +47,7 @@ setup(
         'arrow==0.6.0',
         'future==0.12.3',
         'rsa',
+        'loggly-python-handler'
     ],
     tests_require=[
         'mock>=1.0.1',
