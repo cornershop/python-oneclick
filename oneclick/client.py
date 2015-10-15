@@ -10,7 +10,7 @@ class Client(object):
     def __init__(self, testing=False):
         self._testing = testing
         if testing:
-            location = 'https://webpay3g.orangepeople.cl:443/webpayserver/wswebpay/OneClickPaymentService'
+            location = 'https://tbk.orangepeople.cl/webpayserver/wswebpay/OneClickPaymentService'
         else:
             location = 'https://webpay3g.transbank.cl:443/webpayserver/wswebpay/OneClickPaymentService'
 
