@@ -16,9 +16,9 @@ class Client(object):
     def __init__(self, testing=False):
         self._testing = testing
         if testing:
-            location = 'https://tbk.orangepeople.cl/webpayserver/wswebpay/OneClickPaymentService'
+            self.location = 'https://tbk.orangepeople.cl/webpayserver/wswebpay/OneClickPaymentService'
         else:
-            location = 'https://webpay3g.transbank.cl:443/webpayserver/wswebpay/OneClickPaymentService'
+            self.location = 'https://webpay3g.transbank.cl:443/webpayserver/wswebpay/OneClickPaymentService'
 
     def send(self, action, xml):
         soap_action = str(action)

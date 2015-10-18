@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import xml.etree.ElementTree as ET
+from xml.etree.ElementTree import ParseError
 from OpenSSL import crypto
-import rsa
 from cStringIO import StringIO
 import os
 
@@ -59,22 +59,26 @@ class Response(object):
         self.validate()
 
     def build_xml_response(self, xml_string):
-        return ET.fromstring(xml_string)
+        try:
+            return ET.fromstring(xml_string)
+        except ParseError:
+            return None
 
     def _canonicalize(self, xml):  # TODO: move to utils or document.p
         output = StringIO()
         from .simplexml import SimpleXMLElement
-        SimpleXMLElement(xml).write_c14n(output, exclusive=True)
-        return output.getvalue()
-        
+        try:
+            SimpleXMLElement(xml).write_c14n(output, exclusive=True)
+            return output.getvalue()
+        except:  # TODO: handle exceptions
+            return None
 
     @property
-    def tbk_key(self):
+    def tbk_key(self):        
         if not self._tbk_key:
             self._tbk_key = crypto.load_certificate(crypto.FILETYPE_PEM, 
                                                     open(os.getenv('TBK_PUBLIC_CRT')).read())   
         return self._tbk_key
-
 
     @property
     def _signed_info(self):  # TODO: move to utils or document.py
@@ -102,9 +106,16 @@ class Response(object):
         return signature_value
 
     def _is_valid_signature(self):
-        if self._testing:
+        if self._testing:  # skip validation on testing mode
             return True
-        return rsa.verify(self._signed_info, self._signature_value, self.tbk_key)
+        elif not os.getenv('TBK_PUBLIC_CRT'):  # tbk certificate undefined
+            return True
+
+        try:  # OpenSSL return: None if the signature is correct, raise exception otherwise
+            crypto.verify(self.tbk_key, self._signature_value, self._signed_info, 'sha1')
+            return True
+        except:
+            return False 
 
     def str2bool(self, bool_string):  # TODO: move to utils
         if bool_string.lower() == 'true':
@@ -140,7 +151,7 @@ class Response(object):
     @property
     def xml_error(self):
         self._xml_error = None
-        if not self._xml_error:
+        if not self._xml_error and self.xml_response:
             faultcode = self.xml_response.findall('.//faultcode')
             faultstring = self.xml_response.findall('.//faultstring')
             if faultcode and faultstring:
@@ -168,7 +179,12 @@ class Response(object):
             return self.response_code
 
     def validate(self):
-        if self.xml_error:
+        if not self.xml_response:
+            self.error = 'SoapServerError'
+            self.error_msg = 'invalid XML response'
+            self.user_error_msg = 'Error al realizar la operación'
+            self.extra = {}
+        elif self.xml_error:
             self.error = 'SoapServerError'
             self.error_msg = self.xml_error['faultstring']
             self.user_error_msg = 'Error al realizar la operación'
