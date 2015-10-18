@@ -8,14 +8,14 @@ import os
 RESPONSE_CODE = {
     'Authorize': {
         '0': 'aprobado',
-        '-1': 'rechazo',
-        '-2': 'rechazo',
-        '-3': 'rechazo',
-        '-4': 'rechazo',
-        '-5': 'rechazo',
-        '-6': 'rechazo',
-        '-7': 'rechazo',
-        '-8': 'rechazo',
+        '-1': 'rechazo de transacción',
+        '-2': 'rechazo, intenténlo nuevamente',
+        '-3': 'rechazo, error en transacción',
+        '-4': 'rechazo de transacción',
+        '-5': 'rechazo por error de tasa',
+        '-6': 'rechazo, excede monto máximo mensual',
+        '-7': 'rechazo, excede límite diario por transacción',
+        '-8': 'rechazo, rubro no autorizado',
         '-97': 'limites Oneclick, máximo monto diario de pago excedido',
         '-98': 'limites Oneclick, máximo monto de pago excedido',
         '-99': 'limites Oneclick, máxima cantidad de pagos diarios excedido'

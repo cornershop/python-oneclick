@@ -6,3 +6,5 @@ future==0.12.3
 pyOpenSSL==0.15.1
 requests==2.5.3
 requests_toolbelt
+rsa
+loggly-python-handler

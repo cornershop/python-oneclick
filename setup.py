@@ -48,7 +48,9 @@ setup(
         'rsa==3.0',
         'pyOpenSSL==0.15.1',
         'requests==2.5.3',
-        'requests_toolbelt'
+        'requests_toolbelt',
+        'rsa',
+        'loggly-python-handler'
     ],
     tests_require=[
         'mock>=1.0.1',

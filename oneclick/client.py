@@ -15,7 +15,10 @@ class Client(object):
 
     def __init__(self, testing=False):
         self._testing = testing
-        self.location = "https://webpay3g.orangepeople.cl:443/webpayserver/wswebpay/OneClickPaymentService"
+        if testing:
+            location = 'https://tbk.orangepeople.cl/webpayserver/wswebpay/OneClickPaymentService'
+        else:
+            location = 'https://webpay3g.transbank.cl:443/webpayserver/wswebpay/OneClickPaymentService'
 
     def send(self, action, xml):
         soap_action = str(action)
@@ -28,11 +31,8 @@ class Client(object):
 
         if sys.version < '3':
             headers = dict((str(k), str(v)) for k, v in headers.items())
-        certificate = os.getenv('TBK_SERVER_CRT', None)
-        if certificate:
-            d = requests.post(self.location, verify=certificate, data=xml, headers=headers)
-        else:
-            d = requests.post(self.location, verify=False, data=xml, headers=headers)
+
+        d = requests.post(self.location, data=xml, headers=headers)
         return d.text
 
     def request(self, action, xml):
