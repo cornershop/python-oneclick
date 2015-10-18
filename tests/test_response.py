@@ -38,6 +38,13 @@ class ValidatorInitInscriptionTest(TestCase):
         self.assertEqual(r.error, 'SoapServerError')
         self.assertEqual(r.error_msg, 'URL is required')
 
+    def test_invalid_xml_response(self):
+        xml = """'<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN"><html><head><title>503 Service Temporarily Unavailable</title></head><body><h1>Service Temporarily Unavailable</h1><p>The server is temporarily unable to service your request due to maintenance downtime or capacity problems. Please try again later.</p><hr><address>Apache/2.2.15 (CentOS) Server at tbk.orangepeople.cl Port 443</address></body'"""
+        r = Response(xml, 'initInscription', True)
+        self.assertEqual(None, r.xml_error)
+        self.assertFalse(r.is_valid())
+        self.assertEqual(r.error, 'SoapServerError')
+        self.assertEqual(r.error_msg, 'invalid XML response')
 
 class ValidatorFinishInscriptionTest(TestCase):
 
