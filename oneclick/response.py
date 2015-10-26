@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import xml.etree.ElementTree as ET
+from xml.etree.ElementTree import ParseError
 from pysimplesoap import xmlsec
 import os
 
@@ -57,10 +58,16 @@ class Response(object):
         self.validate()
 
     def build_xml_response(self, xml_string):
-        return ET.fromstring(xml_string)
+        try:
+            return ET.fromstring(xml_string)
+        except ParseError:
+            return None
 
     def _canonicalize(self, xml):  # TODO: move to utils or document.py
-        return xmlsec.canonicalize(xml)
+        try:
+            return xmlsec.canonicalize(xml)
+        except:
+            return None
 
     @property
     def tbk_key(self):
@@ -71,7 +78,7 @@ class Response(object):
     @property
     def _signed_info(self):  # TODO: move to utils or document.py
         namespaces = ['{http://schemas.xmlsoap.org/soap/envelope/}Header',
-                      '{http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd}Security', 
+                      '{http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd}Security',
                       '{http://www.w3.org/2000/09/xmldsig#}Signature',
                       '{http://www.w3.org/2000/09/xmldsig#}SignedInfo']
         element = self.xml_response
@@ -83,7 +90,7 @@ class Response(object):
     @property
     def _signature_value(self):
         namespaces = ['{http://schemas.xmlsoap.org/soap/envelope/}Header',
-                      '{http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd}Security', 
+                      '{http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd}Security',
                       '{http://www.w3.org/2000/09/xmldsig#}Signature',
                       '{http://www.w3.org/2000/09/xmldsig#}SignatureValue']
 
@@ -95,6 +102,8 @@ class Response(object):
 
     def _is_valid_signature(self):
         if self._testing:
+            return True
+        elif not os.getenv('TBK_PUBLIC_CRT'):  # tbk certificate undefined
             return True
         return xmlsec.rsa_verify(self._signed_info,
                                  self._signature_value,
@@ -134,7 +143,7 @@ class Response(object):
     @property
     def xml_error(self):
         self._xml_error = None
-        if not self._xml_error:
+        if not self._xml_error and self.xml_response:
             faultcode = self.xml_response.findall('.//faultcode')
             faultstring = self.xml_response.findall('.//faultstring')
             if faultcode and faultstring:
@@ -162,7 +171,12 @@ class Response(object):
             return self.response_code
 
     def validate(self):
-        if self.xml_error:
+        if not self.xml_response:
+            self.error = 'SoapServerError'
+            self.error_msg = 'invalid XML response'
+            self.user_error_msg = 'Error al realizar la operación'
+            self.extra = {}
+        elif self.xml_error:
             self.error = 'SoapServerError'
             self.error_msg = self.xml_error['faultstring']
             self.user_error_msg = 'Error al realizar la operación'
