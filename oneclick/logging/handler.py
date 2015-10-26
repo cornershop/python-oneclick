@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 import os
+import json
 import datetime
 from contextlib import closing
 import logging
@@ -49,6 +50,7 @@ class LogglyHandler(object):
         event_type = kwargs.pop('type')
         #  set basic keys
         extra = {'event_type': event_type, 'action': kwargs['action']}
+
         #  set keys
         for k, v in kwargs.items():
             if k in ['token', 'tbkUser']:  # hide private info
@@ -61,14 +63,14 @@ class LogglyHandler(object):
         self.log_event(message=message, extra=extra)
 
     def format_msg(self, extra):
-        base_fmt = '{"loggerName":"%(name)s", "asciTime":"%(asctime)s", "fileName":"%(filename)s", "logRecordCreationTime":"%(created)f", "functionName":"%(funcName)s", "levelNo":"%(levelno)s", "lineNo":"%(lineno)d", "time":"%(msecs)d", "levelName":"%(levelname)s", "message":"%(message)s"'
-        fmt_extra = u''
-        for k, v in extra.items():
-            key = str(k).decode('unicode_escape').encode('ascii','ignore')
-            value = str(v).decode('unicode_escape').encode('ascii','ignore')
-            fmt_extra = '{}, "{}": "{}"'.format(fmt_extra.encode('ascii','ignore'), key, value)
+        base_fmt = {"loggerName":"%(name)s", "asciTime":"%(asctime)s", 
+                    "fileName":"%(filename)s", "logRecordCreationTime":"%(created)f", 
+                    "functionName":"%(funcName)s", "levelNo":"%(levelno)s", 
+                    "lineNo":"%(lineno)d", "time":"%(msecs)d", "levelName":"%(levelname)s", 
+                    "message":"%(message)s"}
 
-        return base_fmt + fmt_extra + '}'
+        base_fmt.update(extra)
+        return str(json.dumps(base_fmt)).decode('unicode_escape').encode('ascii','ignore')
 
     def log_event(self, message, extra):
         logger = logging.getLogger(LOGGLY_LOG_NAME)
