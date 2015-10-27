@@ -74,7 +74,7 @@ class LogglyHandler(object):
 
     def log_event(self, message, extra):
         logger = logging.getLogger(LOGGLY_LOG_NAME)
-        syslog = HTTPSHandler('https://logs-01.loggly.com/inputs/{}/tag/python'.format(self.api_key), 'POST')
+        syslog = HTTPSHandler('https://logs-01.loggly.com/inputs/{}/tag/oneclick'.format(self.api_key), 'POST')
         formatter = logging.Formatter(self.format_msg(extra))
         syslog.setFormatter(formatter)
         logger.setLevel(logging.INFO)
