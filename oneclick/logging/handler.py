@@ -2,13 +2,9 @@
 from __future__ import unicode_literals
 
 import os
-import json
 import datetime
 from contextlib import closing
-import logging
-import logging.config
 
-from loggly.handlers import HTTPSHandler
 import pytz
 
 
@@ -40,44 +36,3 @@ class SimpleHandler(object):
         now = santiago.localize(datetime.datetime.now())
         file_name = log_file_name_format % now.strftime(log_file_date_format)
         return open(os.path.join(self.path, file_name), 'a+')
-
-
-class LogglyHandler(object):
-    def __init__(self, api_key=None):
-        self.api_key = api_key
-
-    def event_generic(self, **kwargs):
-        event_type = kwargs.pop('type')
-        #  set basic keys
-        extra = {'event_type': event_type, 'action': kwargs['action']}
-
-        #  set keys
-        for k, v in kwargs.items():
-            if k in ['token', 'tbkUser']:  # hide private info
-                extra[k] = v[-4:]
-            else:
-                extra[k] = v
-        #  format message
-        message = '{} => {}'.format(event_type, kwargs['action'])
-
-        self.log_event(message=message, extra=extra)
-
-    def format_msg(self, extra):
-        base_fmt = {"loggerName":"%(name)s", "asciTime":"%(asctime)s", 
-                    "fileName":"%(filename)s", "logRecordCreationTime":"%(created)f", 
-                    "functionName":"%(funcName)s", "levelNo":"%(levelno)s", 
-                    "lineNo":"%(lineno)d", "time":"%(msecs)d", "levelName":"%(levelname)s", 
-                    "message":"%(message)s"}
-
-        base_fmt.update(extra)
-        return str(json.dumps(base_fmt)).decode('unicode_escape').encode('ascii','ignore')
-
-    def log_event(self, message, extra):
-        logger = logging.getLogger(LOGGLY_LOG_NAME)
-        syslog = HTTPSHandler('https://logs-01.loggly.com/inputs/{}/tag/oneclick'.format(self.api_key), 'POST')
-        formatter = logging.Formatter(self.format_msg(extra))
-        syslog.setFormatter(formatter)
-        logger.setLevel(logging.WARNING)
-        logger.addHandler(syslog)
-        logger = logging.LoggerAdapter(logger, {})
-        logger.warning(message)
