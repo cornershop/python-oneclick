@@ -6,22 +6,22 @@ import os
 
 RESPONSE_CODE = {
     'Authorize': {
-        '0': 'aprobado',
-        '-1': 'rechazo de transacción',
-        '-2': 'rechazo, intenténlo nuevamente',
-        '-3': 'rechazo, error en transacción',
-        '-4': 'rechazo de transacción',
-        '-5': 'rechazo por error de tasa',
-        '-6': 'rechazo, excede monto máximo mensual',
-        '-7': 'rechazo, excede límite diario por transacción',
-        '-8': 'rechazo, rubro no autorizado',
-        '-97': 'limites Oneclick, máximo monto diario de pago excedido',
-        '-98': 'limites Oneclick, máximo monto de pago excedido',
-        '-99': 'limites Oneclick, máxima cantidad de pagos diarios excedido'
+        '0': 'Aprobado.',
+        '-1': 'La transacción ha sido rechazada.',
+        '-2': 'La transacción ha sido rechazada, por favor intente nuevamente.',
+        '-3': 'Ha ocurrido un error al hacer la transacción.',
+        '-4': 'La transacción ha sido rechazada.',
+        '-5': 'La transacción ha sido rechazada porque la tasa es inválida.',
+        '-6': 'Ha alcanzado el límite de transacciones mensuales.',
+        '-7': 'Ha alcanzado el límite de transacciones diarias.',
+        '-8': 'La transacción ha sido rechazada, el rubro es inválido.',
+        '-97': 'Ha alcanzado el máximo monto diario de pagos.',
+        '-98': 'La transacción ha sido rechazada porque ha excedido el máximo monto de pago.',
+        '-99': 'La transacción ha sido rechazada porque ha excedido la máxima cantidad de pagos diarias.'
     },
     'default': {
-        '0': 'aprobado',
-        '-98': 'Error'
+        '0': 'Aprobado.',
+        '-98': 'Ha ocurrido un error inesperado.'
     }
 }
 
