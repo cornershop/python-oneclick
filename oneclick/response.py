@@ -7,15 +7,15 @@ import os
 RESPONSE_CODE = {
     'Authorize': {
         '0': 'Aprobado.',
-        '-1': 'La transacción ha sido rechazada.',
-        '-2': 'La transacción ha sido rechazada, por favor intente nuevamente.',
-        '-3': 'Ha ocurrido un error al hacer la transacción.',
-        '-4': 'La transacción ha sido rechazada.',
+        '-1': 'La transacción ha sido rechazada, por favor contacta a tu banco para más información.',
+        '-2': 'La transacción ha sido rechazada, por favor contacta a tu banco para más información.',
+        '-3': 'Ha ocurrido un error al hacer la transacción, por favor contacta a tu banco para más información.',
+        '-4': 'La transacción ha sido rechazada, por favor contacta a tu banco para más información.',
         '-5': 'La transacción ha sido rechazada porque la tasa es inválida.',
-        '-6': 'Ha alcanzado el límite de transacciones mensuales.',
-        '-7': 'Ha alcanzado el límite de transacciones diarias.',
-        '-8': 'La transacción ha sido rechazada, el rubro es inválido.',
-        '-97': 'Ha alcanzado el máximo monto diario de pagos.',
+        '-6': 'Ha alcanzado el límite de transacciones mensuales, por favor contacta a tu banco para más información.',
+        '-7': 'Ha alcanzado el límite de transacciones diarias, por favor contacta a tu banco para más información.',
+        '-8': 'La transacción ha sido rechazada, por favor contacta a tu banco para más información.',
+        '-97': 'Ha alcanzado el máximo monto diario de pagos, por favor contacta a tu banco para más información.',
         '-98': 'La transacción ha sido rechazada porque ha excedido el máximo monto de pago.',
         '-99': 'La transacción ha sido rechazada porque ha excedido la máxima cantidad de pagos diarias.'
     },
