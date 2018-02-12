@@ -8,7 +8,7 @@ RESPONSE_CODE = {
     'Authorize': {
         '0': 'Aprobado.',
         '-1': 'La transacción ha sido rechazada, por favor contacta a tu banco para más información.',
-        '-2': 'La transacción ha sido rechazada, por favor contacta a tu banco para más información.',
+        '-2': 'Ha ocurrido un error inesperado, por favor vuelve a intentar en unos minutos.',
         '-3': 'Ha ocurrido un error al hacer la transacción, por favor contacta a tu banco para más información.',
         '-4': 'La transacción ha sido rechazada, por favor contacta a tu banco para más información.',
         '-5': 'La transacción ha sido rechazada porque la tasa es inválida.',
@@ -21,7 +21,7 @@ RESPONSE_CODE = {
     },
     'default': {
         '0': 'Aprobado.',
-        '-98': 'Ha ocurrido un error inesperado.'
+        '-98': 'Ha ocurrido un error inesperado, por favor vuelve a intentar en unos minutos.'
     }
 }
 
