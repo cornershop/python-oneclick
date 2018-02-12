@@ -16,7 +16,7 @@ RESPONSE_CODE = {
         '-7': 'Ha alcanzado el límite de transacciones diarias, por favor contacta a tu banco para más información.',
         '-8': 'La transacción ha sido rechazada, por favor contacta a tu banco para más información.',
         '-97': 'Ha alcanzado el máximo monto diario de pagos, por favor contacta a tu banco para más información.',
-        '-98': 'La transacción ha sido rechazada porque ha excedido el máximo monto de pago.',
+        '-98': 'La transacción ha sido rechazada porque ha excedido el máximo monto de pago, por favor contacta a servicio al cliente.',
         '-99': 'La transacción ha sido rechazada porque ha excedido la máxima cantidad de pagos diarias.'
     },
     'default': {
