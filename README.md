@@ -3,7 +3,7 @@
 
 Setup:
 
-  ```
+  ``` shell
   python setup.py develop
   ```
 
@@ -11,18 +11,21 @@ Setup:
 
 First set environment variable for commerce
 
-```
+``` python
 os.environ['TBK_COMMERCE_KEY'] = "KEY"
 os.environ['TBK_COMMERCE_CRT'] = "CERTIFICATE"
 ```
 Init Inscription
 
-```
+``` python
 #  request
 oneclick = OneClick()
-resp = oneclick.init_inscription(email='your@email.com', 
-                                 redirect_url='http://your_domain.com',
-                                 username='your_username')
+resp = oneclick.init_inscription(
+  email='your@email.com',
+  response_url='http://your_domain.com',
+  username='your_username'
+)
+
 #  response example
 resp.is_valid()  # True
 resp.token  # e7665f871fa39e6c05549eeddd1ff07a520a769fa84cc6994465cdb06cbb4b
@@ -30,10 +33,12 @@ resp.urlWebpay  # https://webpay3g.orangepeople.cl/webpayserver/bp_inscription.c
 ```
 Finish Inscription
 
-```
+``` python
 oneclick = OneClick()
-#  Transbank send the TBK_TOKEN to the redirect_url given on init_inscription
+
+#  Transbank send the TBK_TOKEN to the response_url given on init_inscription
 resp = oneclick.finish_inscription(token=params['TBK_TOKEN'])
+
 #  response example
 resp.is_valid()  # True
 resp.authCode  # 1234
@@ -43,13 +48,17 @@ resp.tbkUser  # d2f27f36-b038-4937-8aa6-182b3de38cfd
 ```
 Authorize
 
-```
+``` python
 oneclick = OneClick()
+
 #  request
-resp = oneclick.authorize(amount_to_charge=10000, 
-                          tbk_user='d2f27f36-b038-4937-8aa6-182b3de38cfd',
-                          username='your_username', 
-                          buy_order='20150820155538859')
+resp = oneclick.authorize(
+  amount=10000,
+  tbk_user='d2f27f36-b038-4937-8aa6-182b3de38cfd',
+  username='your_username',
+  buy_order='20150820155538859'
+)
+
 #  response example
 resp.is_valid()  # True
 resp.authorizationCode  # 1213
@@ -59,22 +68,27 @@ resp.last4CardDigits  #  6623
 ```
 Reverse
 
-```
+``` python
 oneclick = OneClick()
+
 #  request
 resp = oneclick.reverse(buy_order='20150820155538859')
+
 #  response example
 resp.is_valid()  # True
 resp.reverseCode  # 3619160862457231902
 resp.reversed  # True
 ```
-remove user
+Remove user
 
-```
+``` python
 oneclick = OneClick()
 #  request
-resp = oneclick.remove_user(tbk_user='d2f27f36-b038-4937-8aa6-182b3de38cfd', 
-                            username='your_username')
+resp = oneclick.remove_user(
+  tbk_user='d2f27f36-b038-4937-8aa6-182b3de38cfd',
+  username='your_username'
+)
+
 #  response example
 resp.is_valid()  # True
 resp.removed  # True
@@ -83,11 +97,11 @@ resp.removed  # True
 
 ## Tests
 
-  ```
+  ``` shell
   python setup.py test
   ```
 
-  ```
+  ``` shell
   nosy
   ```  
 
