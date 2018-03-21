@@ -1,8 +1,13 @@
-from socket import error as SocketError
 import errno
-
-from pysimplesoap.client import SoapClient
-from response import Response
+from socket import (
+    error as SocketError,
+)
+from pysimplesoap.client import (
+    SoapClient,
+)
+from .response import (
+    Response,
+)
 
 
 class Client(object):
@@ -26,7 +31,11 @@ class Client(object):
 
     def request(self, action, xml):
         try:
-            return Response(self.client.send(action, xml), action, True)
+            return Response(
+                self.client.send(action, xml),
+                action,
+                True
+            )
         except SocketError as e:
             if e.errno == errno.ECONNRESET:
                 response_error = Response("ECONNRESET", action)

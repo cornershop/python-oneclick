@@ -36,8 +36,12 @@ class OneClick(object):
         return response
 
     def authorize(self, amount, tbk_user, username, buy_order):
-        params = {'amount': amount, 'tbkUser': tbk_user,
-                  'username': username, 'buyOrder': buy_order}
+        params = {
+            'amount': amount,
+            'tbkUser': tbk_user,
+            'username': username,
+            'buyOrder': buy_order
+        }
         request = Request(**params)
         d = Document(action='authorize', params=params)
         response = self.client.request('Authorize', d.doc)
