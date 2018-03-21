@@ -1,7 +1,15 @@
-from document import Document
-from request import Request
-from client import Client
+import sys
 from .logging import logger
+
+# if python3, import with dot
+if sys.version_info.major == 3:
+    from .document import Document
+    from .request import Request
+    from .client import Client
+else:
+    from document import Document
+    from request import Request
+    from client import Client
 
 
 class OneClick(object):
