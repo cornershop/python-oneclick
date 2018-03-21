@@ -92,7 +92,11 @@ class Document(object):
         body_id = self.get_body_id()
         # 1) build body
         body_params = self.build_params_xml(self._params)
-        params = {'action': self._action, 'params': body_params, 'body_id': body_id}
+        params = {
+            'action': self._action,
+            'params': body_params,
+            'body_id': body_id
+        }
         body = BODY_TMPL % params
 
         # 2) firm with body
@@ -107,9 +111,15 @@ class Document(object):
             'utf-8'
         )
         # get params
-        params = {'signature_value': signature_value, 'issuer_name': self.get_issuer_name(),
-                  'serial_number': self.get_serial_number(), 'digest_value': digest_value,
-                  'body_id': body_id, 'action': self._action, 'params': body_params}
+        params = {
+            'signature_value': signature_value,
+            'issuer_name': self.get_issuer_name(),
+            'serial_number': self.get_serial_number(),
+            'digest_value': digest_value,
+            'body_id': body_id,
+            'action': self._action,
+            'params': body_params
+        }
 
         # 4) build headers
         return XML_TMPL % params
