@@ -54,8 +54,13 @@ class Document(object):
 
     def get_body_id(self):
         m = md5.new()
-        m.update("{}{}{}".format(self._action, self._params,
-                 arrow.now().format('YYYY-MM-DD HH:mm:ss ZZ')))
+        m.update(
+            "{}{}{}".format(
+                self._action,
+                self._params,
+                arrow.now().format('YYYY-MM-DD HH:mm:ss ZZ')
+            ).encode('utf-8')
+        )
         return m.hexdigest()
 
     def rsa_sign(self, xml):
@@ -79,11 +84,16 @@ class Document(object):
         body = BODY_TMPL % params
 
         # 2) firm with body
-        digest_value = self.get_digest_value(body, True)
+        digest_value = str(self.get_digest_value(body, True), 'utf-8')
 
         # 3) assign
         xml_to_sign = SIGN_ENV_TMPL % {'digest_value': digest_value, 'body_id': body_id}
-        signature_value = self.rsa_sign(xml=xml_to_sign)
+        signature_value = str(
+            self.rsa_sign(
+                xml=xml_to_sign.encode('utf-8')
+            ),
+            'utf-8'
+        )
         # get params
         params = {'signature_value': signature_value, 'issuer_name': self.get_issuer_name(),
                   'serial_number': self.get_serial_number(), 'digest_value': digest_value,
