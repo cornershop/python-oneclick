@@ -84,7 +84,7 @@ class Document(object):
 
     def build_params_xml(self, params):
         params_xml = ""
-        for k, v in params.items():
+        for k, v in list(params.items()):
             params_xml += '<{0}>{1}</{0}>'.format(k, v)
         return params_xml
 
