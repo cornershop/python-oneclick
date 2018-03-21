@@ -11,9 +11,18 @@ class OneClick(object):
         self.client = Client(testing)
 
     def init_inscription(self, email, response_url, username):
-        params = {'email': email, 'username': username, 'responseURL': response_url}
-        request = Request(**params)
-        d = Document(action='initInscription', params=params)
+        params = {
+            'email': email,
+            'username': username,
+            'responseURL': response_url
+        }
+        request = Request(
+            **params
+        )
+        d = Document(
+            action='initInscription',
+            params=params
+        )
         response = self.client.request('initInscription', d.doc)
         logger.generic('init_inscription', request, response)
         return response

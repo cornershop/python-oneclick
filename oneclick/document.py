@@ -1,9 +1,15 @@
 from pysimplesoap import xmlsec
 import arrow
-import md5
 import rsa
+import sys
 import os
 import base64
+
+# if python3, import md5 from hashlib, if python2, import md5 module directly
+if sys.version_info.major == 3:
+    from hashlib import md5
+else:
+    import md5
 
 SIGN_ENV_TMPL = """<ds:SignedInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"></ds:CanonicalizationMethod><ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"></ds:SignatureMethod><ds:Reference URI="#%(body_id)s"><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"></ds:Transform></ds:Transforms><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"></ds:DigestMethod><ds:DigestValue>%(digest_value)s</ds:DigestValue></ds:Reference></ds:SignedInfo>"""
 
@@ -53,7 +59,13 @@ class Document(object):
         return xmlsec.sha1_hash_digest(xml)
 
     def get_body_id(self):
-        m = md5.new()
+        m = None
+
+        if sys.version_info.major == 3:
+            m = md5()
+        else:
+            m = md5.new()
+
         m.update(
             "{}{}{}".format(
                 self._action,
