@@ -187,7 +187,7 @@ class Response(object):
             self.user_error_msg = 'Error al realizar la operación'
             self.extra = self.xml_error
         else:
-            if self.action in ['finishInscription', 'Authorize'] and int(self.response_code) != 0:
+            if self.action in ['finishInscription', 'authorize'] and int(self.response_code) != 0:
                 self.error = '{}Error'.format(self.action)
                 self.error_msg = self.response_code_display()
                 self.user_error_msg = self.error_msg
