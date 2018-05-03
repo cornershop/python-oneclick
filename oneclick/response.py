@@ -8,16 +8,16 @@ RESPONSE_CODE = {
     'Authorize': {
         '0': 'Aprobado.',
         '-1': 'La transacción ha sido rechazada, por favor contacta a tu banco para más información.',
-        '-2': 'Ha ocurrido un error inesperado, por favor vuelve a intentar en unos minutos.',
-        '-3': 'Ha ocurrido un error al hacer la transacción, por favor contacta a tu banco para más información.',
+        '-2': 'La transacción ha sido rechazada, por favor contacta a tu banco para más información.',
+        '-3': 'La transacción ha sido rechazada, por favor contacta a tu banco para más información.',
         '-4': 'La transacción ha sido rechazada, por favor contacta a tu banco para más información.',
-        '-5': 'La transacción ha sido rechazada porque la tasa es inválida.',
-        '-6': 'Ha alcanzado el límite de transacciones mensuales, por favor contacta a tu banco para más información.',
-        '-7': 'Ha alcanzado el límite de transacciones diarias, por favor contacta a tu banco para más información.',
+        '-5': 'La transacción ha sido rechazada, por favor contacta a tu banco para más información.',
+        '-6': 'La transacción ha sido rechazada, por favor contacta a tu banco para más información.',
+        '-7': 'La transacción ha sido rechazada, por favor contacta a tu banco para más información.',
         '-8': 'La transacción ha sido rechazada, por favor contacta a tu banco para más información.',
-        '-97': 'Ha alcanzado el máximo monto diario de pagos, por favor contacta a tu banco para más información.',
-        '-98': 'La transacción ha sido rechazada porque ha excedido el máximo monto de pago, por favor contacta a servicio al cliente.',
-        '-99': 'La transacción ha sido rechazada porque ha excedido la máxima cantidad de pagos diarias.'
+        '-97': 'La transacción ha sido rechazada porque has excedido el monto máximo de compra en Cornershop. Por favor intenta con otro método de pago, o mañana.',
+        '-98': 'La transacción ha sido rechazada porque excede el monto máximo de pago en Cornershop. Por favor contacta a Servicio al Cliente.',
+        '-99': 'La transacción ha sido rechazada porque has excedido el máximo de compras en Cornershop. Por favor intenta con otro método de pago, o mañana.'
     },
     'default': {
         '0': 'Aprobado.',
