@@ -73,7 +73,7 @@ class ValidatorFinishInscriptionTest(TestCase):
         r = Response(xml, 'finishInscription', True)
         self.assertFalse(r.is_valid())
         self.assertEqual(r.error, 'finishInscriptionError')
-        self.assertEqual(r.error_msg, 'Error')
+        self.assertEqual(r.error_msg, 'Ha ocurrido un error inesperado, por favor vuelve a intentar en unos minutos.')
 
 
 class ValidatorAuthorizeTest(TestCase):
@@ -122,8 +122,8 @@ class ValidatorAuthorizeTest(TestCase):
         r = Response(xml, 'Authorize', True)
         self.assertFalse(r.is_valid())
         self.assertEqual(r.error, 'AuthorizeError')
-        self.assertEqual(r.error_msg, 'limites Oneclick, máximo monto de pago excedido')
-        self.assertEqual(r.user_error_msg, 'limites Oneclick, máximo monto de pago excedido')
+        self.assertEqual(r.error_msg, 'La transacci\xc3\xb3n ha sido rechazada porque ha excedido el m\xc3\xa1ximo monto de pago, por favor contacta a servicio al cliente.')
+        self.assertEqual(r.user_error_msg, 'La transacci\xc3\xb3n ha sido rechazada porque ha excedido el m\xc3\xa1ximo monto de pago, por favor contacta a servicio al cliente.')
 
     def test_authorize_with_maximum_payments_exceeded(self):
         xml = """<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Header><wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" soap:mustUnderstand="1"><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#" Id="SIG-8418"><ds:SignedInfo><ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"><ec:InclusiveNamespaces xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#" PrefixList="soap"/></ds:CanonicalizationMethod><ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><ds:Reference URI="#id-8417"><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"><ec:InclusiveNamespaces xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#" PrefixList=""/></ds:Transform></ds:Transforms><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>OGBAVz4h7um3+DFrHvBzahVmsDE=</ds:DigestValue></ds:Reference></ds:SignedInfo><ds:SignatureValue>ZPg+X9p6U6cArwO93sZsU/c+FhKk0iiE6nLeS6gZZjsEvMDMpOjU6g5FJVUMVcXDJB2CkSBzOrEI\nD4awwE6vUWQ7jxlgchiME5HeQqok1wI9fMmNo3UfVt52/In6aCNrYeHlbYi+Zeod/05DUbTyznQS\nNax6v/WT2MUBs6usNe3aT3ryzY7WRuGdrP2lS3tmUQasfJBuZzCn7BqZULjWmi2+nlsmiVafIK0W\nOmNEV9XyUhsOKtrVEF7JGuJ9dJZP7cdYKVUOzFRnt/rdqHflghA4mr/WzEHVpVliA1MvgzJ0XvOw\nCRb4slH6EuSYNKmMZUoKDe3ShbcsBd0fz6RJwSoL5RN6mD+EA5KudbPimXD90WrqJCGbu1nIfXtr\n9DlmbEjobPApaRJ2e+m9of5KhoFNF76OXXumrrGgp8N/k/+jMyfX0abbLtzZfebvyWbeqO14XCzw\nyFO22RfVff9cpYS6vadUuu7dNe67QmbuZk8uTu+QNqSozO7wuDL336fNkMBafohKcSCzmZuXTqKp\nt4OJWYzINMKaypT06IWrGL83P3GBcqadKKo19IiZtiaQ9XJIhrZixYtHzDGV1cKKI7v+bBhZed+1\n2MR6e5ro6VdsMQCZ7C/BRT0sPd/0tinV4eJdNAquWT/a62c4HlCUAw/9iSbVzAhNV9QaCKGPX6Q=</ds:SignatureValue><ds:KeyInfo Id="KI-F6DDC585AC5A582DD2142573691238412626"><wsse:SecurityTokenReference wsu:Id="STR-F6DDC585AC5A582DD2142573691238412627"><ds:X509Data><ds:X509IssuerSerial><ds:X509IssuerName>CN=10,OU=ExperTI,O=ExperTI,L=Santiago,ST=Santiago,C=CL,1.2.840.113549.1.9.1=#16116a636572646140657870657274692e636c</ds:X509IssuerName><ds:X509SerialNumber>1401281826</ds:X509SerialNumber></ds:X509IssuerSerial></ds:X509Data></wsse:SecurityTokenReference></ds:KeyInfo></ds:Signature></wsse:Security></soap:Header><soap:Body xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="id-8417"><ns2:authorizeResponse xmlns:ns2="http://webservices.webpayserver.transbank.com/"><return><creditCardType>Visa</creditCardType><last4CardDigits>6623</last4CardDigits><responseCode>-98</responseCode><transactionId>71686</transactionId></return></ns2:authorizeResponse></soap:Body></soap:Envelope>"""
