@@ -1,9 +1,15 @@
 from pysimplesoap import xmlsec
 import arrow
-import md5
 import rsa
+import sys
 import os
 import base64
+
+# if python3, import md5 from hashlib, if python2, import md5 module directly
+if sys.version_info.major == 3:
+    from hashlib import md5
+else:
+    import md5
 
 SIGN_ENV_TMPL = """<ds:SignedInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"></ds:CanonicalizationMethod><ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"></ds:SignatureMethod><ds:Reference URI="#%(body_id)s"><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"></ds:Transform></ds:Transforms><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"></ds:DigestMethod><ds:DigestValue>%(digest_value)s</ds:DigestValue></ds:Reference></ds:SignedInfo>"""
 
@@ -53,9 +59,20 @@ class Document(object):
         return xmlsec.sha1_hash_digest(xml)
 
     def get_body_id(self):
-        m = md5.new()
-        m.update("{}{}{}".format(self._action, self._params,
-                 arrow.now().format('YYYY-MM-DD HH:mm:ss ZZ')))
+        m = None
+
+        if sys.version_info.major == 3:
+            m = md5()
+        else:
+            m = md5.new()
+
+        m.update(
+            "{}{}{}".format(
+                self._action,
+                self._params,
+                arrow.now().format('YYYY-MM-DD HH:mm:ss ZZ')
+            ).encode('utf-8')
+        )
         return m.hexdigest()
 
     def rsa_sign(self, xml):
@@ -67,7 +84,7 @@ class Document(object):
 
     def build_params_xml(self, params):
         params_xml = ""
-        for k, v in params.items():
+        for k, v in list(params.items()):
             params_xml += '<{0}>{1}</{0}>'.format(k, v)
         return params_xml
 
@@ -75,19 +92,34 @@ class Document(object):
         body_id = self.get_body_id()
         # 1) build body
         body_params = self.build_params_xml(self._params)
-        params = {'action': self._action, 'params': body_params, 'body_id': body_id}
+        params = {
+            'action': self._action,
+            'params': body_params,
+            'body_id': body_id
+        }
         body = BODY_TMPL % params
 
         # 2) firm with body
-        digest_value = self.get_digest_value(body, True)
+        digest_value = str(self.get_digest_value(body, True), 'utf-8')
 
         # 3) assign
         xml_to_sign = SIGN_ENV_TMPL % {'digest_value': digest_value, 'body_id': body_id}
-        signature_value = self.rsa_sign(xml=xml_to_sign)
+        signature_value = str(
+            self.rsa_sign(
+                xml=xml_to_sign.encode('utf-8')
+            ),
+            'utf-8'
+        )
         # get params
-        params = {'signature_value': signature_value, 'issuer_name': self.get_issuer_name(),
-                  'serial_number': self.get_serial_number(), 'digest_value': digest_value,
-                  'body_id': body_id, 'action': self._action, 'params': body_params}
+        params = {
+            'signature_value': signature_value,
+            'issuer_name': self.get_issuer_name(),
+            'serial_number': self.get_serial_number(),
+            'digest_value': digest_value,
+            'body_id': body_id,
+            'action': self._action,
+            'params': body_params
+        }
 
         # 4) build headers
         return XML_TMPL % params

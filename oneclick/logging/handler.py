@@ -21,7 +21,7 @@ class SimpleHandler(object):
         event_type = kwargs.pop('type')
         event_info = '{} ({}) \n'.format(event_type, kwargs['action'])
 
-        for k, v in kwargs.items():
+        for k, v in list(kwargs.items()):
             event_info = '{}\t{} => {}\n'.format(event_info, k, v)
 
         with closing(self.events_log_file) as events_log_file:

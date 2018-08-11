@@ -1,7 +1,15 @@
-from document import Document
-from request import Request
-from client import Client
+import sys
 from .logging import logger
+
+# if python3, import with dot
+if sys.version_info.major == 3:
+    from .document import Document
+    from .request import Request
+    from .client import Client
+else:
+    from document import Document
+    from request import Request
+    from client import Client
 
 
 class OneClick(object):
@@ -11,9 +19,18 @@ class OneClick(object):
         self.client = Client(testing)
 
     def init_inscription(self, email, response_url, username):
-        params = {'email': email, 'username': username, 'responseURL': response_url}
-        request = Request(**params)
-        d = Document(action='initInscription', params=params)
+        params = {
+            'email': email,
+            'username': username,
+            'responseURL': response_url
+        }
+        request = Request(
+            **params
+        )
+        d = Document(
+            action='initInscription',
+            params=params
+        )
         response = self.client.request('initInscription', d.doc)
         logger.generic('init_inscription', request, response)
         return response
@@ -27,8 +44,12 @@ class OneClick(object):
         return response
 
     def authorize(self, amount, tbk_user, username, buy_order):
-        params = {'amount': amount, 'tbkUser': tbk_user,
-                  'username': username, 'buyOrder': buy_order}
+        params = {
+            'amount': amount,
+            'tbkUser': tbk_user,
+            'username': username,
+            'buyOrder': buy_order
+        }
         request = Request(**params)
         d = Document(action='authorize', params=params)
         response = self.client.request('Authorize', d.doc)
