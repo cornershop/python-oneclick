@@ -18,8 +18,7 @@ long_description = read_file('README.rst').strip().split('split here', 1)[0]
 
 setup(
     name='oneclick',
-    #version=version,
-    #version='0.0.1',
+    version='0.0.1',
     #description=__import__('oneclick').__doc__.strip(),
     long_description=long_description,
     author='Ignacio Hermosilla',
